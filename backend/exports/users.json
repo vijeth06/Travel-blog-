@@ -1,0 +1,31 @@
+[
+  {
+    "name": "John Traveler",
+    "email": "john@test.com",
+    "password": "$2a$10$uG8cc9YdmtwB0kRkH1rD.uDk.6TgqK6ZJ6v2WQp0qNwP6X7q0o6Bu", 
+    "role": "admin",
+    "bio": "Travel enthusiast and blogger",
+    "country": "USA",
+    "city": "New York",
+    "isVerified": true
+  },
+  {
+    "name": "Sarah Explorer",
+    "email": "sarah@test.com",
+    "password": "$2a$10$uG8cc9YdmtwB0kRkH1rD.uDk.6TgqK6ZJ6v2WQp0qNwP6X7q0o6Bu", 
+    "role": "author",
+    "bio": "Adventure seeker and photographer",
+    "country": "Canada",
+    "city": "Toronto",
+    "isVerified": true
+  },
+  {
+    "name": "Mike Wanderer",
+    "email": "mike@test.com",
+    "password": "$2a$10$uG8cc9YdmtwB0kRkH1rD.uDk.6TgqK6ZJ6v2WQp0qNwP6X7q0o6Bu",
+    "role": "visitor",
+    "country": "UK",
+    "city": "London",
+    "isVerified": true
+  }
+]

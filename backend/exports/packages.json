@@ -1,0 +1,69 @@
+[
+  {
+    "title": "Swiss Alps Adventure Package",
+    "description": "Experience the breathtaking beauty of the Swiss Alps with guided hiking tours, mountain railways, and luxury accommodation.",
+    "location": "Zermatt, Switzerland",
+    "duration": "7 days",
+    "price": 2499,
+    "type": "Family",
+    "createdBy_email": "john@test.com",
+    "category_name": "Adventure",
+    "images": [
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+      "https://images.unsplash.com/photo-1551524164-6cf2ac531400?w=800"
+    ],
+    "features": ["Professional guide", "All meals included", "4-star hotel", "Transportation", "Equipment provided"],
+    "inclusions": ["Accommodation", "All meals", "Professional guide", "Transportation", "Equipment"],
+    "exclusions": ["International flights", "Travel insurance", "Personal expenses"],
+    "maxCapacity": 12,
+    "currentBookings": 3,
+    "availability": true,
+    "featured": true,
+    "itinerary": [
+      {"day": 1, "title": "Arrival in Zermatt", "description": "Check-in and orientation", "activities": ["Hotel check-in", "Welcome dinner", "Equipment fitting"]},
+      {"day": 2, "title": "Gornergrat Railway", "description": "Scenic train ride and hiking", "activities": ["Train to Gornergrat", "Panoramic hiking", "Photography session"]}
+    ]
+  },
+  {
+    "title": "Maldives Paradise Getaway",
+    "description": "Luxury island resort experience with overwater villas, spa treatments, and water activities.",
+    "location": "Maldives",
+    "duration": "5 days",
+    "price": 3999,
+    "type": "Couple",
+    "createdBy_email": "sarah@test.com",
+    "category_name": "Beach",
+    "images": [
+      "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800",
+      "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=800"
+    ],
+    "features": ["Overwater villa", "All-inclusive", "Spa access", "Water sports", "Private beach"],
+    "inclusions": ["Luxury accommodation", "All meals and drinks", "Spa treatments", "Water activities", "Airport transfers"],
+    "exclusions": ["International flights", "Excursions", "Alcoholic beverages"],
+    "maxCapacity": 8,
+    "currentBookings": 2,
+    "availability": true,
+    "featured": true,
+    "discount": {"percentage": 15, "validUntil": "2025-12-31T00:00:00.000Z", "conditions": "Book before end of month"}
+  },
+  {
+    "title": "Kyoto Cultural Experience",
+    "description": "Immerse yourself in traditional Japanese culture with temple visits, tea ceremonies, and authentic experiences.",
+    "location": "Kyoto, Japan",
+    "duration": "4 days",
+    "price": 1899,
+    "type": "Single",
+    "createdBy_email": "john@test.com",
+    "category_name": "Culture",
+    "images": [
+      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800",
+      "https://images.unsplash.com/photo-1528164344705-47542687000d?w=800"
+    ],
+    "features": ["Cultural guide", "Traditional accommodation", "Tea ceremony", "Temple visits", "Local cuisine"],
+    "inclusions": ["Traditional ryokan stay", "Cultural guide", "Tea ceremony", "Temple entrance fees", "Some meals"],
+    "exclusions": ["International flights", "All meals", "Personal shopping", "Tips"],
+    "maxCapacity": 15,
+    "currentBookings": 7,
+    "availability": true
+  }
+]
