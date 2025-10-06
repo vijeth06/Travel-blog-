@@ -42,7 +42,6 @@ import axios from 'axios';
 const GamificationPage = () => {
   const [profile, setProfile] = useState(null);
   const [achievements, setAchievements] = useState([]);
-  const [recentActivities, setRecentActivities] = useState([]);
   const [selectedAchievement, setSelectedAchievement] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user, token } = useSelector((state) => state.auth);
@@ -116,24 +115,24 @@ const GamificationPage = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h3" component="h1" gutterBottom sx={{ mb: 4, textAlign: 'center' }}>
-        🎮 Your Travel Achievements
+    <Container maxWidth="lg" sx={{ py: 3 }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3, textAlign: 'center' }}>
+        Your Travel Achievements
       </Typography>
 
       {/* Profile Stats */}
-      <Grid container spacing={4} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={4}>
-          <Card elevation={3}>
+          <Card elevation={2}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Avatar
-                sx={{ width: 80, height: 80, mx: 'auto', mb: 2, bgcolor: 'primary.main' }}
+                sx={{ width: 70, height: 70, mx: 'auto', mb: 2, bgcolor: 'primary.main' }}
               >
-                <Typography variant="h4" color="white">
+                <Typography variant="h5" color="white">
                   {profile?.level || 1}
                 </Typography>
               </Avatar>
-              <Typography variant="h5" gutterBottom>
+              <Typography variant="h6" gutterBottom>
                 Level {profile?.level || 1} Traveler
               </Typography>
               <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -146,7 +145,7 @@ const GamificationPage = () => {
                 <LinearProgress
                   variant="determinate"
                   value={getLevelProgress()}
-                  sx={{ height: 8, borderRadius: 4 }}
+                  sx={{ height: 6, borderRadius: 3 }}
                 />
                 <Typography variant="caption" color="text.secondary">
                   {profile?.nextLevelPoints - (profile?.totalPoints || 0)} points to go
@@ -157,39 +156,39 @@ const GamificationPage = () => {
         </Grid>
 
         <Grid item xs={12} md={8}>
-          <Card elevation={3}>
+          <Card elevation={2}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                📊 Activity Stats
+                Activity Stats
               </Typography>
-              <Grid container spacing={3}>
+              <Grid container spacing={2}>
                 <Grid item xs={6} sm={3}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <Typography variant="h4" color="primary">
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <Typography variant="h5" color="primary">
                       {profile?.stats?.blogsCreated || 0}
                     </Typography>
                     <Typography variant="caption">Blogs Written</Typography>
                   </Paper>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <Typography variant="h4" color="secondary">
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <Typography variant="h5" color="secondary">
                       {profile?.stats?.countriesVisited || 0}
                     </Typography>
                     <Typography variant="caption">Countries</Typography>
                   </Paper>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <Typography variant="h4" color="success.main">
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <Typography variant="h5" color="success.main">
                       {profile?.stats?.photosUploaded || 0}
                     </Typography>
                     <Typography variant="caption">Photos</Typography>
                   </Paper>
                 </Grid>
                 <Grid item xs={6} sm={3}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <Typography variant="h4" color="warning.main">
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <Typography variant="h5" color="warning.main">
                       {profile?.stats?.likesReceived || 0}
                     </Typography>
                     <Typography variant="caption">Likes</Typography>
@@ -202,10 +201,10 @@ const GamificationPage = () => {
       </Grid>
 
       {/* Achievements */}
-      <Card elevation={3} sx={{ mb: 4 }}>
+      <Card elevation={2} sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h5" gutterBottom>
-            🏆 Achievements ({achievements.length})
+            Achievements ({achievements.length})
           </Typography>
           <Grid container spacing={2}>
             {achievements.map((achievement) => (
@@ -215,13 +214,16 @@ const GamificationPage = () => {
                     cursor: 'pointer',
                     transition: 'transform 0.2s, box-shadow 0.2s',
                     '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: 4,
+                      transform: 'translateY(-2px)',
+                      boxShadow: 3,
                     },
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column'
                   }}
                   onClick={() => handleAchievementClick(achievement)}
                 >
-                  <CardContent sx={{ textAlign: 'center' }}>
+                  <CardContent sx={{ textAlign: 'center', flexGrow: 1 }}>
                     <Badge
                       badgeContent={achievement.points}
                       color="primary"
@@ -229,8 +231,8 @@ const GamificationPage = () => {
                     >
                       <Avatar
                         sx={{
-                          width: 60,
-                          height: 60,
+                          width: 50,
+                          height: 50,
                           mx: 'auto',
                           bgcolor: achievement.unlocked ? 'gold' : 'grey.300',
                         }}
@@ -238,10 +240,10 @@ const GamificationPage = () => {
                         {getAchievementIcon(achievement.type)}
                       </Avatar>
                     </Badge>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant="subtitle1" gutterBottom>
                       {achievement.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                       {achievement.description}
                     </Typography>
                     {achievement.unlocked && (
@@ -278,8 +280,8 @@ const GamificationPage = () => {
               </IconButton>
               <Avatar
                 sx={{
-                  width: 80,
-                  height: 80,
+                  width: 70,
+                  height: 70,
                   mx: 'auto',
                   mb: 2,
                   bgcolor: selectedAchievement.unlocked ? 'gold' : 'grey.300',
@@ -293,7 +295,7 @@ const GamificationPage = () => {
               <Typography variant="body1" paragraph>
                 {selectedAchievement.description}
               </Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, flexWrap: 'wrap', gap: 1 }}>
                 <Chip
                   label={`${selectedAchievement.points} Points`}
                   color="primary"

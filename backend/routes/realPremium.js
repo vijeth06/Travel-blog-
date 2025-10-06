@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const RealPremiumController = require('../controllers/realPremiumController');
+const RealPremiumControllerClass = require('../controllers/realPremiumController');
+const RealPremiumController = new RealPremiumControllerClass();
 const auth = require('../middleware/auth');
 const rateLimit = require('express-rate-limit');
 
@@ -30,7 +31,7 @@ const paymentRateLimit = rateLimit({
  * @access  Public
  * @example GET /api/premium/plans
  */
-router.get('/plans', RealPremiumController.getPlans);
+router.get('/plans', RealPremiumController.getPlans.bind(RealPremiumController));
 
 /**
  * @route   GET /api/premium/subscription
@@ -38,7 +39,7 @@ router.get('/plans', RealPremiumController.getPlans);
  * @access  Private
  * @example GET /api/premium/subscription
  */
-router.get('/subscription', auth, RealPremiumController.getCurrentSubscription);
+router.get('/subscription', auth, RealPremiumController.getCurrentSubscription.bind(RealPremiumController));
 
 /**
  * @route   POST /api/premium/subscribe
@@ -50,7 +51,7 @@ router.get('/subscription', auth, RealPremiumController.getCurrentSubscription);
 router.post('/subscribe', 
   auth, 
   paymentRateLimit, 
-  RealPremiumController.createSubscription
+  RealPremiumController.createSubscription.bind(RealPremiumController)
 );
 
 /**
@@ -63,7 +64,7 @@ router.post('/subscribe',
 router.put('/upgrade', 
   auth, 
   paymentRateLimit, 
-  RealPremiumController.upgradeSubscription
+  RealPremiumController.upgradeSubscription.bind(RealPremiumController)
 );
 
 /**
@@ -76,7 +77,7 @@ router.put('/upgrade',
 router.post('/cancel', 
   auth, 
   premiumRateLimit, 
-  RealPremiumController.cancelSubscription
+  RealPremiumController.cancelSubscription.bind(RealPremiumController)
 );
 
 /**
@@ -89,7 +90,7 @@ router.post('/cancel',
 router.post('/trial', 
   auth, 
   premiumRateLimit, 
-  RealPremiumController.startTrial
+  RealPremiumController.startTrial.bind(RealPremiumController)
 );
 
 /**
@@ -100,7 +101,7 @@ router.post('/trial',
  */
 router.get('/feature/validate', 
   auth, 
-  RealPremiumController.validateFeature
+  RealPremiumController.validateFeature.bind(RealPremiumController)
 );
 
 /**
@@ -113,7 +114,7 @@ router.get('/feature/validate',
 router.post('/feature/use', 
   auth, 
   premiumRateLimit, 
-  RealPremiumController.useFeature
+  RealPremiumController.useFeature.bind(RealPremiumController)
 );
 
 /**
@@ -125,7 +126,7 @@ router.post('/feature/use',
 router.get('/analytics', 
   auth, 
   // TODO: Add admin middleware
-  RealPremiumController.getAnalytics
+  RealPremiumController.getAnalytics.bind(RealPremiumController)
 );
 
 /**

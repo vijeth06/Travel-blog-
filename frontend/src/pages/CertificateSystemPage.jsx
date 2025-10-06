@@ -219,7 +219,7 @@ const CertificateSystemPage = () => {
 
   const CertificateCard = ({ certificate, isEarned = false }) => (
     <Card
-      elevation={3}
+      elevation={2}
       sx={{
         height: '100%',
         display: 'flex',
@@ -227,10 +227,10 @@ const CertificateSystemPage = () => {
         position: 'relative',
         transition: 'transform 0.2s, box-shadow 0.2s',
         '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: 8,
+          transform: 'translateY(-2px)',
+          boxShadow: 4,
         },
-        opacity: isEarned ? 1 : 0.8,
+        opacity: isEarned ? 1 : 0.9,
         border: isEarned ? `2px solid ${getLevelColor(certificate.level)}` : 'none',
       }}
     >
@@ -246,18 +246,18 @@ const CertificateSystemPage = () => {
       <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
         <Avatar
           sx={{
-            width: 80,
-            height: 80,
+            width: 70,
+            height: 70,
             mx: 'auto',
             mb: 2,
             bgcolor: getLevelColor(certificate.level),
-            border: `3px solid ${getLevelColor(certificate.level)}`,
+            border: `2px solid ${getLevelColor(certificate.level)}`,
           }}
         >
           {getCertificateIcon(certificate.type)}
         </Avatar>
 
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="subtitle1" gutterBottom>
           {certificate.title}
         </Typography>
 
@@ -268,22 +268,24 @@ const CertificateSystemPage = () => {
             color: 'white',
             fontWeight: 'bold',
             mb: 2,
+            fontSize: '0.7rem',
+            height: 20
           }}
         />
 
-        <Typography variant="body2" color="text.secondary" paragraph>
+        <Typography variant="body2" color="text.secondary" paragraph sx={{ mb: 1.5 }}>
           {certificate.description}
         </Typography>
 
         {!isEarned && (
-          <Box sx={{ mt: 2 }}>
+          <Box sx={{ mt: 1, mb: 2 }}>
             <Typography variant="body2" gutterBottom>
               Progress: {certificate.currentCount || 0} / {certificate.totalRequired || 0}
             </Typography>
             <LinearProgress
               variant="determinate"
               value={certificate.progress || 0}
-              sx={{ height: 8, borderRadius: 4, mb: 1 }}
+              sx={{ height: 6, borderRadius: 3, mb: 1 }}
             />
             <Typography variant="caption" color="text.secondary">
               {certificate.progress || 0}% Complete
@@ -292,18 +294,19 @@ const CertificateSystemPage = () => {
         )}
 
         {isEarned && (
-          <Typography variant="caption" color="text.secondary" display="block">
+          <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
             Earned on {new Date(certificate.earnedDate).toLocaleDateString()}
           </Typography>
         )}
 
-        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+        <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', gap: 1 }}>
           {isEarned ? (
             <>
               <Button
                 size="small"
                 startIcon={<Download />}
                 onClick={() => handleDownloadCertificate(certificate.id)}
+                variant="outlined"
               >
                 Download
               </Button>
@@ -330,39 +333,39 @@ const CertificateSystemPage = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="lg" sx={{ py: 3 }}>
         <Typography>Loading certificates...</Typography>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h3" component="h1" gutterBottom sx={{ mb: 4, textAlign: 'center' }}>
-        🏆 Travel Certificates
+    <Container maxWidth="lg" sx={{ py: 3 }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3, textAlign: 'center' }}>
+        Travel Certificates
       </Typography>
 
       {/* Stats Overview */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={4}>
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h3" color="primary">
+          <Paper sx={{ p: 2, textAlign: 'center' }}>
+            <Typography variant="h4" color="primary">
               {certificates.length}
             </Typography>
             <Typography variant="body1">Certificates Earned</Typography>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h3" color="secondary">
+          <Paper sx={{ p: 2, textAlign: 'center' }}>
+            <Typography variant="h4" color="secondary">
               {availableCertificates.length}
             </Typography>
             <Typography variant="body1">Available to Earn</Typography>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h3" color="success.main">
+          <Paper sx={{ p: 2, textAlign: 'center' }}>
+            <Typography variant="h4" color="success.main">
               {Math.round(certificates.length / (certificates.length + availableCertificates.length) * 100) || 0}%
             </Typography>
             <Typography variant="body1">Completion Rate</Typography>
@@ -373,10 +376,10 @@ const CertificateSystemPage = () => {
       {/* Earned Certificates */}
       {certificates.length > 0 && (
         <>
-          <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-            ✨ Your Certificates
+          <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
+            Your Certificates
           </Typography>
-          <Grid container spacing={3} sx={{ mb: 6 }}>
+          <Grid container spacing={3} sx={{ mb: 4 }}>
             {certificates.map((certificate) => (
               <Grid item xs={12} sm={6} md={4} key={certificate.id}>
                 <CertificateCard certificate={certificate} isEarned={true} />
@@ -387,8 +390,8 @@ const CertificateSystemPage = () => {
       )}
 
       {/* Available Certificates */}
-      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-        🎯 Certificates to Earn
+      <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
+        Certificates to Earn
       </Typography>
       <Grid container spacing={3}>
         {availableCertificates.map((certificate) => (
@@ -416,8 +419,8 @@ const CertificateSystemPage = () => {
               </IconButton>
               <Avatar
                 sx={{
-                  width: 80,
-                  height: 80,
+                  width: 70,
+                  height: 70,
                   mx: 'auto',
                   mb: 2,
                   bgcolor: getLevelColor(selectedCertificate.level),
@@ -433,6 +436,8 @@ const CertificateSystemPage = () => {
                   color: 'white',
                   fontWeight: 'bold',
                   mt: 1,
+                  fontSize: '0.8rem',
+                  height: 24
                 }}
               />
             </DialogTitle>
@@ -457,7 +462,7 @@ const CertificateSystemPage = () => {
                 <LinearProgress
                   variant="determinate"
                   value={selectedCertificate.progress || 0}
-                  sx={{ height: 8, borderRadius: 4 }}
+                  sx={{ height: 6, borderRadius: 3 }}
                 />
               </Box>
 
@@ -470,6 +475,7 @@ const CertificateSystemPage = () => {
                     label={selectedCertificate.reward}
                     color="primary"
                     icon={<Star />}
+                    size="small"
                   />
                 </Box>
               )}

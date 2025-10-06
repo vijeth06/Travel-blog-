@@ -38,14 +38,14 @@ const photo360Routes = require('./routes/photo360');
 const monetizationRoutes = require('./routes/monetization');
 const analyticsRoutes = require('./routes/analytics');
 const mobileRoutes = require('./routes/mobile');
-const integrationRoutes = require('./routes/realIntegrations');
-const premiumRoutes = require('./routes/realPremium');
-const realMobileOptimizationRoutes = require('./routes/realMobileOptimization');
+// const integrationRoutes = require('./routes/realIntegrations');
+// const premiumRoutes = require('./routes/realPremium');
+// const realMobileOptimizationRoutes = require('./routes/realMobileOptimization');
 const uxRoutes = require('./routes/ux');
 const highImpactRoutes = require('./routes/highImpact');
 const searchRoutes = require('./routes/search');
 const reviewRoutes = require('./routes/reviews');
-const followRoutes = require('./routes/followRoutes');
+// const followRoutes = require('./routes/followRoutes');
 
 const app = express();
 
@@ -133,14 +133,14 @@ app.use('/api/360-photos', photo360Routes);
 app.use('/api/monetization', monetizationRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/mobile', mobileRoutes);
-app.use('/api/integrations', integrationRoutes);
-app.use('/api/premium', premiumRoutes);
-app.use('/api/mobile', realMobileOptimizationRoutes);
+// app.use('/api/integrations', integrationRoutes);
+// app.use('/api/premium', premiumRoutes);
+// app.use('/api/mobile', realMobileOptimizationRoutes);
 app.use('/api/ux', uxRoutes);
 app.use('/api/high-impact', highImpactRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/reviews', reviewRoutes);
-app.use('/api/follow', followRoutes);
+// app.use('/api/follow', followRoutes);
 
 app.get('/', (req, res) => res.send('Travel Blog API running'));
 

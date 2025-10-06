@@ -51,7 +51,7 @@ import {
 } from '@mui/icons-material';
 import api from '../services/api';
 
-// Mock map component (in real implementation, use Google Maps, Mapbox, or Leaflet)
+// Improved map component with better structure
 const InteractiveMap = () => {
   const mapRef = useRef(null);
   const [mapData, setMapData] = useState({
@@ -335,6 +335,27 @@ const InteractiveMap = () => {
     }
   };
 
+  // Improved marker positioning function
+  const positionMarker = (index, totalItems, containerWidth, containerHeight) => {
+    if (totalItems === 0) return { left: '50%', top: '50%' };
+    
+    // Calculate grid positions
+    const rows = Math.ceil(Math.sqrt(totalItems));
+    const cols = Math.ceil(totalItems / rows);
+    
+    const row = Math.floor(index / cols);
+    const col = index % cols;
+    
+    // Calculate percentages with padding
+    const leftPercent = 10 + (col / Math.max(cols - 1, 1)) * 80;
+    const topPercent = 10 + (row / Math.max(rows - 1, 1)) * 80;
+    
+    return {
+      left: `${leftPercent}%`,
+      top: `${topPercent}%`
+    };
+  };
+
   return (
     <Container maxWidth="xl" sx={{ py: 2 }}>
       <Typography variant="h4" component="h1" gutterBottom align="center">
@@ -476,7 +497,7 @@ const InteractiveMap = () => {
         <Grid item xs={12} md={8}>
           <Card sx={{ height: 600, position: 'relative' }}>
             <CardContent sx={{ height: '100%', p: 0 }}>
-              {/* Mock Map Display */}
+              {/* Improved Map Display */}
               <Box
                 ref={mapRef}
                 sx={{
@@ -505,26 +526,31 @@ const InteractiveMap = () => {
                   }}
                 />
 
-                {/* Mock Markers */}
-                {getAllItems().map((item, index) => (
-                  <Tooltip key={item._id} title={item.name}>
-                    <Fab
-                      size="small"
-                      onClick={() => handleMarkerClick(item)}
-                      sx={{
-                        position: 'absolute',
-                        left: `${20 + (index * 80) % 400}px`,
-                        top: `${50 + (index * 60) % 300}px`,
-                        bgcolor: selectedItem?._id === item._id ? 'secondary.main' : 'primary.main',
-                        '&:hover': { transform: 'scale(1.1)' },
-                        transition: 'transform 0.2s',
-                        zIndex: selectedItem?._id === item._id ? 10 : 1
-                      }}
-                    >
-                      {getMarkerIcon(item.type)}
-                    </Fab>
-                  </Tooltip>
-                ))}
+                {/* Improved Markers */}
+                {getAllItems().map((item, index) => {
+                  const items = getAllItems();
+                  const position = positionMarker(index, items.length, 400, 300);
+                  return (
+                    <Tooltip key={item._id} title={item.name}>
+                      <Fab
+                        size="small"
+                        onClick={() => handleMarkerClick(item)}
+                        sx={{
+                          position: 'absolute',
+                          left: position.left,
+                          top: position.top,
+                          transform: 'translate(-50%, -50%)',
+                          bgcolor: selectedItem?._id === item._id ? 'secondary.main' : 'primary.main',
+                          '&:hover': { transform: 'translate(-50%, -50%) scale(1.1)' },
+                          transition: 'transform 0.2s, background-color 0.2s',
+                          zIndex: selectedItem?._id === item._id ? 10 : 1
+                        }}
+                      >
+                        {getMarkerIcon(item.type)}
+                      </Fab>
+                    </Tooltip>
+                  );
+                })}
 
                 {/* User Location Marker */}
                 {userLocation && (
@@ -601,7 +627,7 @@ const InteractiveMap = () => {
                     {selectedItem.description}
                   </Typography>
                   
-                  <Box display="flex" gap={1} mb={2}>
+                  <Box display="flex" gap={1} mb={2} flexWrap="wrap">
                     <Chip label={selectedItem.type} size="small" />
                     {selectedItem.rating && (
                       <Chip label={`⭐ ${selectedItem.rating}`} size="small" />
@@ -611,7 +637,7 @@ const InteractiveMap = () => {
                     )}
                   </Box>
 
-                  <Box display="flex" gap={1}>
+                  <Box display="flex" gap={1} flexWrap="wrap">
                     <Button
                       variant="contained"
                       size="small"
