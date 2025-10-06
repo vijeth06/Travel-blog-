@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Travel Blog</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .offline-container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .offline-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .offline-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .offline-message {
+            font-size: 18px;
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .offline-tips {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .offline-tips h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .tips-list {
+            text-align: left;
+            color: #4a5568;
+            line-height: 1.8;
+        }
+
+        .tips-list li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .tips-list li::before {
+            content: "✈️";
+            flex-shrink: 0;
+        }
+
+        .network-status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .network-status.online {
+            background: #f0fff4;
+            color: #38a169;
+            border: 1px solid #9ae6b4;
+        }
+
+        .network-status.offline {
+            background: #fef5e7;
+            color: #d69e2e;
+            border: 1px solid #f6e05e;
+        }
+
+        @media (max-width: 600px) {
+            .offline-container {
+                padding: 40px 20px;
+            }
+
+            .offline-title {
+                font-size: 24px;
+            }
+
+            .offline-message {
+                font-size: 16px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">✈️</div>
+        <h1 class="offline-title">You're Flying Offline!</h1>
+        <p class="offline-message">
+            No worries, fellow traveler! While you're disconnected from the internet, 
+            you can still explore your cached adventures and plan your next journey.
+        </p>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="window.location.reload()">
+                🔄 Try Again
+            </button>
+            <a href="/" class="btn btn-secondary">
+                🏠 Go Home
+            </a>
+        </div>
+
+        <div class="network-status" id="networkStatus">
+            📡 Checking connection...
+        </div>
+
+        <div class="offline-tips">
+            <h3>What you can do offline:</h3>
+            <ul class="tips-list">
+                <li>Browse your saved travel blogs and photos</li>
+                <li>Review your upcoming trip itineraries</li>
+                <li>Plan new destinations with cached content</li>
+                <li>Check your travel statistics and achievements</li>
+                <li>Update your travel goals and preferences</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Monitor network status
+        function updateNetworkStatus() {
+            const statusElement = document.getElementById('networkStatus');
+            
+            if (navigator.onLine) {
+                statusElement.textContent = '🟢 Back online! You can refresh the page now.';
+                statusElement.className = 'network-status online';
+                
+                // Auto-refresh after 2 seconds when back online
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                statusElement.textContent = '🔴 You\'re currently offline';
+                statusElement.className = 'network-status offline';
+            }
+        }
+
+        // Check network status on load
+        updateNetworkStatus();
+
+        // Listen for network changes
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        // Service worker registration check
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                console.log('Service Worker is ready');
+                
+                // Listen for service worker updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New content is available
+                            if (confirm('New content is available! Refresh to update?')) {
+                                window.location.reload();
+                            }
+                        }
+                    });
+                });
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'r' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                window.location.reload();
+            } else if (event.key === 'h' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                window.location.href = '/';
+            }
+        });
+
+        // Add some visual feedback for button interactions
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.98)';
+            });
+            
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = '';
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = '';
+            });
+        });
+
+        // Show cached content count if available
+        if ('caches' in window) {
+            caches.keys().then(cacheNames => {
+                if (cacheNames.length > 0) {
+                    caches.open(cacheNames[0]).then(cache => {
+                        cache.keys().then(keys => {
+                            if (keys.length > 0) {
+                                const tipsElement = document.querySelector('.tips-list');
+                                const cacheInfo = document.createElement('li');
+                                cacheInfo.innerHTML = `You have ${keys.length} cached resources available offline`;
+                                cacheInfo.style.fontWeight = '600';
+                                cacheInfo.style.color = '#38a169';
+                                tipsElement.insertBefore(cacheInfo, tipsElement.firstChild);
+                            }
+                        });
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

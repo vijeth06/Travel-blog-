@@ -1,15 +1,23 @@
 {
-  "name": "travel-blog-deployment",
+  "name": "travel-blog-fullstack",
   "version": "1.0.0",
-  "description": "Travel Blog deployment configuration",
+  "description": "Travel Blog fullstack application",
   "scripts": {
     "build": "cd frontend && npm install && npm run build",
     "start": "cd backend && npm start",
-    "install-frontend": "npm install --prefix frontend",
-    "build-frontend": "npm run build --prefix frontend",
-    "postinstall": "npm install --prefix frontend"
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm start",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "dev:backend": "cd backend && npm run dev",
+    "heroku-postbuild": "npm run install:backend && npm run install:frontend && npm run build"
   },
   "engines": {
-    "node": ">=14.0.0"
-  }
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "keywords": ["travel", "blog", "mern", "react", "node", "express", "mongodb"],
+  "author": "Your Name",
+  "license": "MIT"
 }

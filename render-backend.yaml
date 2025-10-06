@@ -1,0 +1,17 @@
+# Backend deployment configuration for Render
+# This file configures the backend API deployment
+
+services:
+  - type: web
+    name: travel-blog-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromService:
+          type: web
+          name: travel-blog-backend
+          property: port
