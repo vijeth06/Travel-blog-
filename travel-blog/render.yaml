@@ -1,9 +1,0 @@
-# Build settings for Render
-# This file tells Render how to deploy the frontend
-
-build:
-  - cd frontend
-  - npm install
-  - npm run build
-  
-publish: frontend/build
