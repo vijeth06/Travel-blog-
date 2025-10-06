@@ -1,0 +1,23 @@
+[
+  {
+    "blog_slug": "amazing-adventure-swiss-alps",
+    "user_email": "sarah@test.com",
+    "content": "Amazing post! I've been to the Swiss Alps and your description brings back wonderful memories.",
+    "status": "approved",
+    "likesCount": 5
+  },
+  {
+    "blog_slug": "amazing-adventure-swiss-alps",
+    "user_email": "mike@test.com",
+    "content": "Thanks for the detailed tips! Planning my trip there next summer.",
+    "status": "approved",
+    "likesCount": 2
+  },
+  {
+    "blog_slug": "tropical-paradise-maldives-island-hopping",
+    "user_email": "john@test.com",
+    "content": "The Maldives looks absolutely stunning! Adding it to my bucket list.",
+    "status": "approved",
+    "likesCount": 8
+  }
+]

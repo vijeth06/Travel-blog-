@@ -1,0 +1,7 @@
+[
+  { "name": "Adventure", "description": "Thrilling adventures and outdoor activities" },
+  { "name": "Beach", "description": "Beautiful beaches and coastal destinations" },
+  { "name": "Culture", "description": "Cultural experiences and historical sites" },
+  { "name": "Food", "description": "Culinary experiences and food tours" },
+  { "name": "Nature", "description": "Natural wonders and wildlife" }
+]

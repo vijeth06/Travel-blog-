@@ -1,0 +1,15 @@
+{
+  "name": "travel-blog-deployment",
+  "version": "1.0.0",
+  "description": "Travel Blog deployment configuration",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "start": "cd backend && npm start",
+    "install-frontend": "npm install --prefix frontend",
+    "build-frontend": "npm run build --prefix frontend",
+    "postinstall": "npm install --prefix frontend"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

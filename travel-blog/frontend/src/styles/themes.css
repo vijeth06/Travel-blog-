@@ -1,0 +1,217 @@
+/* Global CSS Variables for Theme Support */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --card-bg: #ffffff;
+  --primary-color: #1976d2;
+  --accent-color: #1976d2;
+  --base-font-size: 16px;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme */
+.dark-theme {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --card-bg: #1e1e1e;
+  --border-color: #333333;
+  --shadow-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Apply theme variables */
+body {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  font-size: var(--base-font-size) !important;
+  transition: all 0.3s ease;
+}
+
+/* Card backgrounds */
+.MuiCard-root {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.MuiPaper-root {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+/* Text fields */
+.MuiTextField-root .MuiInputBase-root {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.MuiTextField-root .MuiInputLabel-root {
+  color: var(--text-color) !important;
+  opacity: 0.7;
+}
+
+.MuiTextField-root .MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-color) !important;
+}
+
+/* Buttons */
+.MuiButton-outlined {
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+}
+
+.MuiButton-outlined:hover {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Lists */
+.MuiList-root {
+  background-color: var(--card-bg) !important;
+}
+
+.MuiListItem-root {
+  color: var(--text-color) !important;
+}
+
+/* Tabs */
+.MuiTabs-root {
+  background-color: var(--card-bg) !important;
+}
+
+.MuiTab-root {
+  color: var(--text-color) !important;
+  opacity: 0.7;
+}
+
+.MuiTab-root.Mui-selected {
+  color: var(--primary-color) !important;
+  opacity: 1;
+}
+
+/* Dialogs */
+.MuiDialog-paper {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+/* Select dropdowns */
+.MuiSelect-root {
+  color: var(--text-color) !important;
+}
+
+.MuiMenuItem-root {
+  color: var(--text-color) !important;
+}
+
+.MuiMenu-paper {
+  background-color: var(--card-bg) !important;
+}
+
+/* Font size classes */
+.font-small {
+  font-size: 14px !important;
+}
+
+.font-medium {
+  font-size: 16px !important;
+}
+
+.font-large {
+  font-size: 18px !important;
+}
+
+/* Color scheme classes */
+.color-blue {
+  --primary-color: #1976d2;
+  --accent-color: #1976d2;
+}
+
+.color-green {
+  --primary-color: #388e3c;
+  --accent-color: #388e3c;
+}
+
+.color-orange {
+  --primary-color: #f57c00;
+  --accent-color: #f57c00;
+}
+
+.color-purple {
+  --primary-color: #7b1fa2;
+  --accent-color: #7b1fa2;
+}
+
+.color-red {
+  --primary-color: #d32f2f;
+  --accent-color: #d32f2f;
+}
+
+/* Smooth transitions for all theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+}
+
+/* Language-specific font adjustments */
+[lang="hi"], [lang="ta"], [lang="te"], [lang="bn"], [lang="mr"], [lang="gu"], [lang="kn"], [lang="ml"], [lang="pa"] {
+  font-family: 'Noto Sans', 'Roboto', sans-serif;
+  line-height: 1.6;
+}
+
+/* Tamil specific */
+[lang="ta"] {
+  font-family: 'Noto Sans Tamil', 'Roboto', sans-serif;
+}
+
+/* Hindi specific */
+[lang="hi"] {
+  font-family: 'Noto Sans Devanagari', 'Roboto', sans-serif;
+}
+
+/* Telugu specific */
+[lang="te"] {
+  font-family: 'Noto Sans Telugu', 'Roboto', sans-serif;
+}
+
+/* Bengali specific */
+[lang="bn"] {
+  font-family: 'Noto Sans Bengali', 'Roboto', sans-serif;
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+  :root {
+    --base-font-size: 14px;
+  }
+  
+  .font-small {
+    font-size: 12px !important;
+  }
+  
+  .font-medium {
+    font-size: 14px !important;
+  }
+  
+  .font-large {
+    font-size: 16px !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #000000;
+  }
+  
+  .dark-theme {
+    --border-color: #ffffff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

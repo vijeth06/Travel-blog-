@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Amazing Adventure in the Swiss Alps",
+    "slug": "amazing-adventure-swiss-alps",
+    "excerpt": "Discover the breathtaking beauty of the Swiss Alps through hiking and mountaineering.",
+    "content": "<h2>An Unforgettable Journey</h2><p>The Swiss Alps offer some of the most spectacular mountain scenery in the world. During my recent trip, I had the opportunity to explore several peaks and valleys that left me speechless.</p><h3>Day 1: Arrival in Zermatt</h3><p>We started our journey in the charming village of Zermatt, famous for the iconic Matterhorn. The village itself is car-free, which adds to its authentic Alpine charm.</p><h3>Day 2-3: Hiking Adventures</h3><p>The hiking trails around Zermatt are well-marked and offer stunning views at every turn. We tackled the Gornergrat trail, which provides panoramic views of over 20 peaks above 4,000 meters.</p><h3>Tips for Future Travelers</h3><ul><li>Pack layers - weather can change quickly in the mountains</li><li>Start early to avoid crowds and afternoon storms</li><li>Bring plenty of water and snacks</li><li>Don't forget your camera!</li></ul>",
+    "author_email": "john@test.com",
+    "category_name": "Adventure",
+    "tags": ["switzerland", "alps", "hiking", "mountains", "adventure"],
+    "location": "Zermatt, Switzerland",
+    "geotag": { "lat": 46.0207, "lng": 7.7491, "country": "Switzerland", "city": "Zermatt" },
+    "status": "published",
+    "publishedAt": "2024-01-10T00:00:00.000Z",
+    "featured": true,
+    "views": 1250,
+    "readingTime": 5,
+    "metaTitle": "Swiss Alps Adventure - Complete Travel Guide",
+    "metaDescription": "Discover the best hiking trails and experiences in the Swiss Alps. Complete guide with tips and recommendations.",
+    "featuredImage": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+  },
+  {
+    "title": "Tropical Paradise: Maldives Island Hopping",
+    "slug": "tropical-paradise-maldives-island-hopping",
+    "excerpt": "Experience the ultimate tropical getaway with crystal clear waters and pristine beaches.",
+    "content": "<h2>Welcome to Paradise</h2><p>The Maldives is truly a slice of heaven on earth. With over 1,000 coral islands scattered across the Indian Ocean, it offers the perfect escape from the hustle and bustle of everyday life.</p><h3>Island Hopping Experience</h3><p>We spent 7 days exploring different atolls, each with its own unique character and charm. From luxury resorts to local island experiences, the diversity is incredible.</p><h3>Best Activities</h3><ul><li>Snorkeling with manta rays</li><li>Sunset dolphin cruises</li><li>Traditional fishing experiences</li><li>Spa treatments over the water</li></ul>",
+    "author_email": "sarah@test.com",
+    "category_name": "Beach",
+    "tags": ["maldives", "beach", "tropical", "islands", "luxury"],
+    "location": "Maldives",
+    "geotag": { "lat": 3.2028, "lng": 73.2207, "country": "Maldives", "city": "Male" },
+    "status": "published",
+    "publishedAt": "2024-01-09T00:00:00.000Z",
+    "views": 890,
+    "readingTime": 4,
+    "featuredImage": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+  },
+  {
+    "title": "Cultural Immersion in Kyoto, Japan",
+    "slug": "cultural-immersion-kyoto-japan",
+    "excerpt": "Explore ancient temples, traditional gardens, and authentic Japanese culture in historic Kyoto.",
+    "content": "<h2>Ancient Meets Modern</h2><p>Kyoto perfectly balances ancient traditions with modern life. Walking through its streets feels like traveling through time.</p><h3>Must-Visit Temples</h3><p>The city is home to over 2,000 temples and shrines. Kinkaku-ji (Golden Pavilion) and Fushimi Inari Shrine are absolute must-sees.</p><h3>Traditional Experiences</h3><ul><li>Tea ceremony in a traditional tea house</li><li>Geisha spotting in Gion district</li><li>Bamboo forest walk in Arashiyama</li><li>Traditional kaiseki dining</li></ul>",
+    "author_email": "john@test.com",
+    "category_name": "Culture",
+    "tags": ["japan", "kyoto", "culture", "temples", "tradition"],
+    "location": "Kyoto, Japan",
+    "geotag": { "lat": 35.0116, "lng": 135.7681, "country": "Japan", "city": "Kyoto" },
+    "status": "published",
+    "publishedAt": "2024-01-08T00:00:00.000Z",
+    "views": 654,
+    "readingTime": 6
+  }
+]
