@@ -26,6 +26,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import CartItem from '../components/CartItem';
 import * as cartAPI from '../api/cart';
+import { getApiUrl } from '../config/api';
 
 const Cart = () => {
   const [cart, setCart] = useState(null);
@@ -41,7 +42,7 @@ const Cart = () => {
     // Test connection first
     const testConnection = async () => {
       try {
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+        const API_BASE_URL = getApiUrl();
         const response = await fetch(`${API_BASE_URL}/cart/count`, { credentials: 'include' });
         if (response.status === 401) {
           setConnectionTest('✅ Server connection successful (auth required)');

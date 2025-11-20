@@ -103,7 +103,7 @@ const ChatPage = () => {
   // Initialize Socket.IO
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const newSocket = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
+    const newSocket = io(getSocketUrl(), {
       auth: { token }
     });
 

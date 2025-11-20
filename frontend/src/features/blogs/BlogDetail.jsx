@@ -39,6 +39,7 @@ import {
 } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../../config/api';
 import SaveToTripButton from '../../components/SaveToTripButton';
 import ReactionPicker from '../../components/ReactionPicker';
 import ReviewsPage from '../../pages/ReviewsPage';
@@ -104,7 +105,7 @@ export default function BlogDetail() {
     const fetchBlog = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/blogs/${id}`, {
+        const response = await fetch(`${getApiUrl()}/blogs/${id}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }

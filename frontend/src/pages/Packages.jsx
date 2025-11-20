@@ -17,6 +17,7 @@ import SearchFilters from '../components/SearchFilters';
 import * as packagesAPI from '../api/packages';
 import * as categoriesAPI from '../api/categories';
 import * as cartAPI from '../api/cart';
+import { getApiUrl } from '../config/api';
 
 const Packages = () => {
   const [packages, setPackages] = useState([]);
@@ -46,7 +47,7 @@ const Packages = () => {
     // Test connection first
     const testConnection = async () => {
       try {
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+        const API_BASE_URL = getApiUrl();
         const response = await fetch(`${API_BASE_URL}/packages?limit=1`);
         if (response.ok) {
           setConnectionTest('✅ Server connection successful');

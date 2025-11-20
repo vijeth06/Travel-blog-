@@ -37,6 +37,7 @@ import {
 import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
 import io from 'socket.io-client';
+import { getSocketUrl } from '../../config/api';
 import { getCommentsByBlog, createComment, deleteComment, flagComment } from '../../api/comments';
 
 const CommentSection = ({ blogId, commentsEnabled = true }) => {
@@ -58,7 +59,7 @@ const CommentSection = ({ blogId, commentsEnabled = true }) => {
 
   // Initialize Socket.IO connection
   useEffect(() => {
-    const newSocket = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
+    const newSocket = io(getSocketUrl(), {
       withCredentials: true
     });
 

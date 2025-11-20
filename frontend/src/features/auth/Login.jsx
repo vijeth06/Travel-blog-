@@ -14,6 +14,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
+import { getApiUrl } from '../../config/api';
 import GoogleAuthButton from '../../components/GoogleAuthButton';
 
 export default function Login() {

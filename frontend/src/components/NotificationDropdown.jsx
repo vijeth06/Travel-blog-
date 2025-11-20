@@ -50,7 +50,7 @@ const NotificationDropdown = () => {
   useEffect(() => {
     if (!isAuthenticated || !user) return;
 
-    const socketInstance = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
+    const socketInstance = io(getSocketUrl(), {
       transports: ['websocket'],
       reconnection: true
     });
