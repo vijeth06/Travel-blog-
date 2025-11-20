@@ -117,7 +117,6 @@ web_modules/
 # vue-cli
 node_modules/
 dist/
-public/
 .env.local
 .env.development.local
 .env.test.local
