@@ -28,7 +28,7 @@ export default function Register() {
   useEffect(() => {
     const testConnection = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/profile');
+        const response = await fetch(`${getApiUrl()}/auth/profile`);
         if (response.status === 401) {
           setConnectionTest('✅ Server is running and ready');
         } else {

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../redux/authSlice';
+import { getApiUrl } from '../config/api';
 import axios from 'axios';
 
 const GoogleAuthCallback = () => {
@@ -30,7 +31,7 @@ const GoogleAuthCallback = () => {
           localStorage.setItem('refreshToken', refreshToken);
 
           // Fetch user profile
-          const response = await axios.get('http://localhost:5000/api/auth/profile', {
+          const response = await axios.get(`${getApiUrl()}/auth/profile`, {
             headers: { Authorization: `Bearer ${accessToken}` }
           });
 
