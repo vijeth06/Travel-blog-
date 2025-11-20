@@ -38,7 +38,12 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 const io = socketIo(server, {
   cors: {
-    origin: process.env.SOCKET_IO_CORS_ORIGIN || "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001", 
+      "https://travel-blog-na4y.onrender.com",
+      process.env.SOCKET_IO_CORS_ORIGIN
+    ].filter(Boolean),
     methods: ["GET", "POST"],
     credentials: true
   }
