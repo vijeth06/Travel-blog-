@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_URL as BASE_URL } from '../config/api';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_URL = BASE_URL;
 
 // Create review
 export const createReview = async (reviewData) => {

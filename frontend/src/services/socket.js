@@ -11,7 +11,15 @@ class SocketService {
       return this.socket;
     }
 
-    const serverUrl = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';
+    // In production, connect to same domain; in development use localhost
+    const getSocketURL = () => {
+      if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_SOCKET_URL) {
+        return window.location.origin;
+      }
+      return process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';
+    };
+
+    const serverUrl = getSocketURL();
     
     this.socket = io(serverUrl, {
       withCredentials: true,

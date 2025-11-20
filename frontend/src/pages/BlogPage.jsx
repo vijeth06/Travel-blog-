@@ -94,7 +94,7 @@ const BlogPage = () => {
 
     try {
       // Toggle bookmark via API
-      const response = await fetch(`http://localhost:5000/api/blogs/${id}/bookmark`, {
+      const response = await fetch(`/api/blogs/${id}/bookmark`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

@@ -1,8 +1,16 @@
 import axios from 'axios';
 
 // Create axios instance with base configuration
+// In production, use relative URL since frontend and backend are on same domain
+const getBaseURL = () => {
+  if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_API_URL) {
+    return '/api';
+  }
+  return process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+};
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: getBaseURL(),
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
