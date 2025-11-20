@@ -40,7 +40,11 @@ const FollowButton = ({
     if (showFollowerCount) {
       fetchFollowerCount();
     }
-  }, [initialFollowing, userId, showFollowerCount]);
+    // Also fetch following status from backend to ensure accuracy
+    if (isAuthenticated && userId) {
+      fetchFollowingStatus();
+    }
+  }, [initialFollowing, userId, showFollowerCount, isAuthenticated]);
 
   // Listen for real-time follow updates
   useEffect(() => {
@@ -65,10 +69,25 @@ const FollowButton = ({
 
   const fetchFollowerCount = async () => {
     try {
-      const response = await api.get(`/users/${userId}/followers/count`);
-      setFollowerCount(response.data.count);
+      const response = await api.get(`/follow/followers/${userId}`);
+      const count = response.data?.data?.total || response.data?.total || response.data?.count;
+      if (typeof count === 'number') {
+        setFollowerCount(count);
+      }
     } catch (error) {
       console.error('Error fetching follower count:', error);
+    }
+  };
+
+  const fetchFollowingStatus = async () => {
+    try {
+      const response = await api.get(`/follow/status/${userId}`);
+      const isFollowingServer = response.data?.data?.following ?? response.data?.following;
+      if (typeof isFollowingServer === 'boolean') {
+        setFollowing(isFollowingServer);
+      }
+    } catch (error) {
+      console.error('Error fetching following status:', error);
     }
   };
 
@@ -77,19 +96,11 @@ const FollowButton = ({
 
     try {
       setLoading(true);
-      const newFollowingState = !following;
+      // API call - toggle follow status via follow service
+      const response = await api.post('/follow/toggle', { userId });
 
-      // Optimistic update
-      setFollowing(newFollowingState);
-      if (showFollowerCount) {
-        setFollowerCount(prev => newFollowingState ? prev + 1 : prev - 1);
-      }
-
-      // API call
-      const endpoint = newFollowingState ? '/social/follow' : '/social/unfollow';
-      const response = await api.post(endpoint, { userId });
-
-      const { following: serverFollowing, followerCount: serverCount } = response.data;
+      const serverFollowing = response.data?.data?.following ?? response.data?.following;
+      const serverCount = response.data?.data?.followerCount ?? response.data?.followerCount;
       
       // Update with server response
       setFollowing(serverFollowing);
@@ -114,10 +125,10 @@ const FollowButton = ({
 
     } catch (error) {
       console.error('Error toggling follow:', error);
-      // Revert optimistic update
-      setFollowing(!following);
+      // On error, refetch status/count to stay consistent
+      fetchFollowingStatus();
       if (showFollowerCount) {
-        setFollowerCount(prev => following ? prev + 1 : prev - 1);
+        fetchFollowerCount();
       }
     } finally {
       setLoading(false);

@@ -61,6 +61,76 @@ class NotificationService {
     return await createNotification(notificationData);
   }
 
+  // Create notification for new message
+  async createMessageNotification(recipient, sender, message) {
+    const notificationData = {
+      recipient: recipient._id,
+      sender: sender._id,
+      type: 'message',
+      title: 'New Message',
+      message: `${sender.name} sent you a message`,
+      link: `/chat`,
+      data: {
+        senderId: sender._id,
+        preview: message.substring(0, 50)
+      }
+    };
+
+    return await createNotification(notificationData);
+  }
+
+  // Create notification for new review
+  async createReviewNotification(targetOwnerId, reviewer, targetType, targetId) {
+    const notificationData = {
+      recipient: targetOwnerId,
+      sender: reviewer._id,
+      type: 'review',
+      title: 'New Review',
+      message: `${reviewer.name} reviewed your ${targetType}`,
+      link: `/${targetType}s/${targetId}#reviews`,
+      data: {
+        targetType,
+        targetId
+      }
+    };
+
+    return await createNotification(notificationData);
+  }
+
+  // Create notification for gallery like
+  async createGalleryLikeNotification(galleryOwnerId, liker, galleryId) {
+    const notificationData = {
+      recipient: galleryOwnerId,
+      sender: liker._id,
+      type: 'gallery_like',
+      title: 'Gallery Liked',
+      message: `${liker.name} liked your gallery`,
+      link: `/gallery#${galleryId}`,
+      data: {
+        galleryId
+      }
+    };
+
+    return await createNotification(notificationData);
+  }
+
+  // Create notification for story view
+  async createStoryViewNotification(storyOwnerId, viewer, storyId) {
+    const notificationData = {
+      recipient: storyOwnerId,
+      sender: viewer._id,
+      type: 'story_view',
+      title: 'Story Viewed',
+      message: `${viewer.name} viewed your story`,
+      link: `/gallery`,
+      data: {
+        storyId
+      }
+    };
+
+    return await createNotification(notificationData);
+  }
+
   // Create notification for booking status change
   async createBookingNotification(booking, status) {
     const statusMessages = {
@@ -78,6 +148,22 @@ class NotificationService {
       data: {
         bookingId: booking._id,
         status: status
+      }
+    };
+
+    return await createNotification(notificationData);
+  }
+
+  // Create notification for achievement
+  async createAchievementNotification(userId, achievementName, achievementDescription) {
+    const notificationData = {
+      recipient: userId,
+      type: 'achievement',
+      title: '🏆 Achievement Unlocked!',
+      message: `You earned: ${achievementName} - ${achievementDescription}`,
+      link: `/profile/achievements`,
+      data: {
+        achievementName
       }
     };
 

@@ -1,6 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const RealMobileOptimizationController = require('../controllers/realMobileOptimizationController');
+
+// Debug: log controller methods
+console.log('Available mobile controller methods:', Object.getOwnPropertyNames(RealMobileOptimizationController));
+console.log('Mobile controller prototype methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(RealMobileOptimizationController)));
+console.log('Mobile controller initializeOptimization type:', typeof RealMobileOptimizationController.initializeOptimization);
+console.log('Mobile controller constructor name:', RealMobileOptimizationController.constructor.name);
+
 const auth = require('../middleware/auth');
 const rateLimit = require('express-rate-limit');
 
@@ -43,7 +50,7 @@ const contentRateLimit = rateLimit({
 router.post('/optimize/init', 
   auth, 
   mobileOptimizationRateLimit, 
-  RealMobileOptimizationController.initializeOptimization
+  RealMobileOptimizationController.initializeOptimization.bind(RealMobileOptimizationController)
 );
 
 /**

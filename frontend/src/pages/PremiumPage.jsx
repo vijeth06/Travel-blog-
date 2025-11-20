@@ -48,6 +48,7 @@ import {
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { getPremiumPlans, getCurrentSubscription, subscribeToPlan, getPremiumFeatures } from '../api/premium';
 
 const PremiumPage = () => {
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
@@ -75,27 +76,27 @@ const PremiumPage = () => {
 
   const fetchSubscriptionStatus = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/monetization/subscription`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await getCurrentSubscription();
+      setSubscriptionStatus(response.subscription || {
+        tier: 'free',
+        expiresAt: null,
+        features: ['Basic blogging', 'Limited storage', 'Community support']
       });
-      setSubscriptionStatus(response.data);
     } catch (error) {
       console.error('Error fetching subscription status:', error);
-      // Demo data
+      // Set free tier as default
       setSubscriptionStatus({
         tier: 'free',
         expiresAt: null,
-        features: ['Basic blogging', 'Limited storage', 'Community support'],
+        features: ['Basic blogging', 'Limited storage', 'Community support']
       });
     }
   };
 
   const fetchPricingPlans = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/monetization/plans`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setPricingPlans(response.data.plans || []);
+      const response = await getPremiumPlans();
+      setPricingPlans(response.plans || []);
     } catch (error) {
       console.error('Error fetching pricing plans:', error);
       // Demo data

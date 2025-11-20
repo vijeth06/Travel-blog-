@@ -30,7 +30,11 @@ import {
   Comment,
   Visibility,
   TrendingUp,
-  Star
+  Star,
+  ChatBubble,
+  PhotoLibrary,
+  EventNote,
+  RateReview
 } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -294,6 +298,188 @@ export default function Home() {
           ))}
         </Grid>
 
+        {/* New Features Showcase Section */}
+        {isAuthenticated && (
+          <Box sx={{ mb: 8, mt: 10 }}>
+            <Typography variant="h4" component="h2" textAlign="center" gutterBottom fontWeight={600}>
+              Explore Platform Features
+            </Typography>
+            <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ mb: 6 }}>
+              Discover powerful tools to enhance your travel experience
+            </Typography>
+            
+            <Grid container spacing={4}>
+              {/* Real-Time Chat */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card 
+                  sx={{ 
+                    height: '100%',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    '&:hover': { 
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 12px 40px rgba(102, 126, 234, 0.4)'
+                    }
+                  }}
+                  onClick={() => navigate('/chat')}
+                >
+                  <CardContent sx={{ textAlign: 'center', p: 4 }}>
+                    <ChatBubble sx={{ fontSize: 60, mb: 2 }} />
+                    <Typography variant="h5" fontWeight={600} gutterBottom>
+                      Real-Time Chat
+                    </Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9, mb: 3 }}>
+                      Connect with fellow travelers, share tips, and plan adventures together
+                    </Typography>
+                    <Button 
+                      variant="outlined" 
+                      sx={{ 
+                        color: 'white', 
+                        borderColor: 'white',
+                        '&:hover': { 
+                          borderColor: 'white', 
+                          bgcolor: 'rgba(255,255,255,0.1)' 
+                        }
+                      }}
+                      endIcon={<ArrowForward />}
+                    >
+                      Start Chatting
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Photo Gallery & Stories */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card 
+                  sx={{ 
+                    height: '100%',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                    color: 'white',
+                    '&:hover': { 
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 12px 40px rgba(240, 147, 251, 0.4)'
+                    }
+                  }}
+                  onClick={() => navigate('/gallery')}
+                >
+                  <CardContent sx={{ textAlign: 'center', p: 4 }}>
+                    <PhotoLibrary sx={{ fontSize: 60, mb: 2 }} />
+                    <Typography variant="h5" fontWeight={600} gutterBottom>
+                      Gallery & Stories
+                    </Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9, mb: 3 }}>
+                      Share your travel moments through beautiful photo galleries and 24h stories
+                    </Typography>
+                    <Button 
+                      variant="outlined" 
+                      sx={{ 
+                        color: 'white', 
+                        borderColor: 'white',
+                        '&:hover': { 
+                          borderColor: 'white', 
+                          bgcolor: 'rgba(255,255,255,0.1)' 
+                        }
+                      }}
+                      endIcon={<ArrowForward />}
+                    >
+                      View Gallery
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Travel Itinerary */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card 
+                  sx={{ 
+                    height: '100%',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                    color: 'white',
+                    '&:hover': { 
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 12px 40px rgba(79, 172, 254, 0.4)'
+                    }
+                  }}
+                  onClick={() => navigate('/itinerary')}
+                >
+                  <CardContent sx={{ textAlign: 'center', p: 4 }}>
+                    <EventNote sx={{ fontSize: 60, mb: 2 }} />
+                    <Typography variant="h5" fontWeight={600} gutterBottom>
+                      Trip Planner
+                    </Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9, mb: 3 }}>
+                      Create detailed itineraries, collaborate with friends, and organize your trips
+                    </Typography>
+                    <Button 
+                      variant="outlined" 
+                      sx={{ 
+                        color: 'white', 
+                        borderColor: 'white',
+                        '&:hover': { 
+                          borderColor: 'white', 
+                          bgcolor: 'rgba(255,255,255,0.1)' 
+                        }
+                      }}
+                      endIcon={<ArrowForward />}
+                    >
+                      Plan Trip
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Reviews System */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card 
+                  sx={{ 
+                    height: '100%',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                    color: 'white',
+                    '&:hover': { 
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 12px 40px rgba(250, 112, 154, 0.4)'
+                    }
+                  }}
+                  onClick={() => navigate('/reviews')}
+                >
+                  <CardContent sx={{ textAlign: 'center', p: 4 }}>
+                    <RateReview sx={{ fontSize: 60, mb: 2 }} />
+                    <Typography variant="h5" fontWeight={600} gutterBottom>
+                      Reviews & Ratings
+                    </Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9, mb: 3 }}>
+                      Share your experiences and help others make informed travel decisions
+                    </Typography>
+                    <Button 
+                      variant="outlined" 
+                      sx={{ 
+                        color: 'white', 
+                        borderColor: 'white',
+                        '&:hover': { 
+                          borderColor: 'white', 
+                          bgcolor: 'rgba(255,255,255,0.1)' 
+                        }
+                      }}
+                      endIcon={<ArrowForward />}
+                    >
+                      Write Review
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          </Box>
+        )}
+
         {/* Categories Section */}
         <Box sx={{ mb: 8 }}>
           <Typography variant="h4" component="h2" textAlign="center" gutterBottom fontWeight={600}>
@@ -509,7 +695,7 @@ export default function Home() {
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Star sx={{ fontSize: 16, mr: 0.5, color: '#FFD700' }} />
                         <Typography variant="caption">
-                          {(Math.random() * 2 + 3).toFixed(1)}
+                          {blog.averageRating?.toFixed(1) || blog.rating?.toFixed(1) || 'N/A'}
                         </Typography>
                       </Box>
                     </Box>
@@ -541,10 +727,12 @@ export default function Home() {
           </Typography>
           
           <Grid container spacing={4}>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <Card
                 sx={{
                   height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   '&:hover': {
                     transform: 'translateY(-8px)',
@@ -554,14 +742,16 @@ export default function Home() {
                   color: 'white',
                 }}
               >
-                <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                  <Typography variant="h2" sx={{ mb: 2 }}>🎮</Typography>
-                  <Typography variant="h5" gutterBottom fontWeight={600}>
-                    Gamification
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3 }}>
-                    Earn achievements, level up, and compete with other travelers as you document your journeys.
-                  </Typography>
+                <CardContent sx={{ textAlign: 'center', p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="h2" sx={{ mb: 2 }}>🎮</Typography>
+                    <Typography variant="h5" gutterBottom fontWeight={600} sx={{ minHeight: '32px' }}>
+                      Gamification
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 3, minHeight: '72px' }}>
+                      Earn achievements, level up, and compete with other travelers as you document your journeys.
+                    </Typography>
+                  </Box>
                   <Button
                     component={Link}
                     to="/gamification"
@@ -574,10 +764,12 @@ export default function Home() {
               </Card>
             </Grid>
             
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <Card
                 sx={{
                   height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   '&:hover': {
                     transform: 'translateY(-8px)',
@@ -587,14 +779,16 @@ export default function Home() {
                   color: 'white',
                 }}
               >
-                <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                  <Typography variant="h2" sx={{ mb: 2 }}>🤖</Typography>
-                  <Typography variant="h5" gutterBottom fontWeight={600}>
-                    AI Recommendations
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3 }}>
-                    Get personalized travel suggestions powered by AI based on your preferences and history.
-                  </Typography>
+                <CardContent sx={{ textAlign: 'center', p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="h2" sx={{ mb: 2 }}>🤖</Typography>
+                    <Typography variant="h5" gutterBottom fontWeight={600} sx={{ minHeight: '32px' }}>
+                      AI Recommendations
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 3, minHeight: '72px' }}>
+                      Get personalized travel suggestions powered by AI based on your preferences and history.
+                    </Typography>
+                  </Box>
                   <Button
                     component={Link}
                     to="/ai-recommendations"
@@ -607,10 +801,12 @@ export default function Home() {
               </Card>
             </Grid>
             
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <Card
                 sx={{
                   height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   '&:hover': {
                     transform: 'translateY(-8px)',
@@ -620,14 +816,16 @@ export default function Home() {
                   color: 'white',
                 }}
               >
-                <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                  <Typography variant="h2" sx={{ mb: 2 }}>🏆</Typography>
-                  <Typography variant="h5" gutterBottom fontWeight={600}>
-                    Certificates
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3 }}>
-                    Earn travel certificates and showcase your expertise in different destinations and activities.
-                  </Typography>
+                <CardContent sx={{ textAlign: 'center', p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="h2" sx={{ mb: 2 }}>🏆</Typography>
+                    <Typography variant="h5" gutterBottom fontWeight={600} sx={{ minHeight: '32px' }}>
+                      Certificates
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 3, minHeight: '72px' }}>
+                      Earn travel certificates and showcase your expertise in different destinations and activities.
+                    </Typography>
+                  </Box>
                   <Button
                     component={Link}
                     to="/certificates"
@@ -640,10 +838,12 @@ export default function Home() {
               </Card>
             </Grid>
             
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <Card
                 sx={{
                   height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   '&:hover': {
                     transform: 'translateY(-8px)',
@@ -653,14 +853,16 @@ export default function Home() {
                   color: 'white',
                 }}
               >
-                <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                  <Typography variant="h2" sx={{ mb: 2 }}>💎</Typography>
-                  <Typography variant="h5" gutterBottom fontWeight={600}>
-                    Premium Features
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3 }}>
-                    Unlock advanced features, unlimited storage, and monetization tools for your travel blog.
-                  </Typography>
+                <CardContent sx={{ textAlign: 'center', p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="h2" sx={{ mb: 2 }}>💎</Typography>
+                    <Typography variant="h5" gutterBottom fontWeight={600} sx={{ minHeight: '32px' }}>
+                      Premium Features
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 3, minHeight: '72px' }}>
+                      Unlock advanced features, unlimited storage, and monetization tools for your travel blog.
+                    </Typography>
+                  </Box>
                   <Button
                     component={Link}
                     to="/premium"
@@ -673,10 +875,12 @@ export default function Home() {
               </Card>
             </Grid>
             
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <Card
                 sx={{
                   height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   '&:hover': {
                     transform: 'translateY(-8px)',
@@ -686,14 +890,16 @@ export default function Home() {
                   color: 'white',
                 }}
               >
-                <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                  <Typography variant="h2" sx={{ mb: 2 }}>🔌</Typography>
-                  <Typography variant="h5" gutterBottom fontWeight={600}>
-                    Integrations
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3 }}>
-                    Connect with social media, weather services, maps, and more to enhance your content.
-                  </Typography>
+                <CardContent sx={{ textAlign: 'center', p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="h2" sx={{ mb: 2 }}>🔌</Typography>
+                    <Typography variant="h5" gutterBottom fontWeight={600} sx={{ minHeight: '32px' }}>
+                      Integrations
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 3, minHeight: '72px' }}>
+                      Connect with social media, weather services, maps, and more to enhance your content.
+                    </Typography>
+                  </Box>
                   <Button
                     component={Link}
                     to="/integrations"
@@ -706,10 +912,12 @@ export default function Home() {
               </Card>
             </Grid>
             
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <Card
                 sx={{
                   height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   '&:hover': {
                     transform: 'translateY(-8px)',
@@ -719,14 +927,16 @@ export default function Home() {
                   color: 'white',
                 }}
               >
-                <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                  <Typography variant="h2" sx={{ mb: 2 }}>📱</Typography>
-                  <Typography variant="h5" gutterBottom fontWeight={600}>
-                    Mobile Optimized
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3 }}>
-                    Experience seamless mobile blogging with offline support and optimized performance.
-                  </Typography>
+                <CardContent sx={{ textAlign: 'center', p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="h2" sx={{ mb: 2 }}>📱</Typography>
+                    <Typography variant="h5" gutterBottom fontWeight={600} sx={{ minHeight: '32px' }}>
+                      Mobile Optimized
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 3, minHeight: '72px' }}>
+                      Experience seamless mobile blogging with offline support and optimized performance.
+                    </Typography>
+                  </Box>
                   <Button
                     component={Link}
                     to="/mobile"

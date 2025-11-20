@@ -35,7 +35,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getAllUsers, getUserById } from '../api/users';
 import { getBlogs } from '../api/blogs';
-import FollowButton from '../components/FollowButton';
+import FollowButton from '../features/social/FollowButton';
 import { formatDistanceToNow } from 'date-fns';
 
 const FollowingPage = () => {
@@ -321,10 +321,10 @@ const FollowingPage = () => {
                         <ListItemSecondaryAction>
                           <FollowButton
                             userId={followedUser._id}
-                            isFollowing={true}
-                            variant="outlined"
+                            initialFollowing
                             size="small"
-                            onFollowChange={(isFollowing) => handleFollowChange(followedUser._id, isFollowing)}
+                            variant="button"
+                            onFollowChange={(isFollowing, followerCount) => handleFollowChange(followedUser._id, isFollowing, followerCount)}
                           />
                         </ListItemSecondaryAction>
                       </ListItem>
@@ -395,10 +395,10 @@ const FollowingPage = () => {
                         <ListItemSecondaryAction>
                           <FollowButton
                             userId={follower._id}
-                            isFollowing={following.some(f => f._id === follower._id)}
-                            variant="outlined"
+                            initialFollowing={following.some(f => f._id === follower._id)}
                             size="small"
-                            onFollowChange={(isFollowing) => handleFollowChange(follower._id, isFollowing)}
+                            variant="button"
+                            onFollowChange={(isFollowing, followerCount) => handleFollowChange(follower._id, isFollowing, followerCount)}
                           />
                         </ListItemSecondaryAction>
                       </ListItem>
@@ -480,10 +480,10 @@ const FollowingPage = () => {
                         <ListItemSecondaryAction>
                           <FollowButton
                             userId={suggestedUser._id}
-                            isFollowing={false}
-                            variant="contained"
+                            initialFollowing={false}
                             size="small"
-                            onFollowChange={(isFollowing) => handleFollowChange(suggestedUser._id, isFollowing)}
+                            variant="button"
+                            onFollowChange={(isFollowing, followerCount) => handleFollowChange(suggestedUser._id, isFollowing, followerCount)}
                           />
                         </ListItemSecondaryAction>
                       </ListItem>

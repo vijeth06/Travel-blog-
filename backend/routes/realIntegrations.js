@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const RealIntegrationController = require('../controllers/realIntegrationController');
-const auth = require('../middleware/auth');
+const RealIntegrationControllerClass = require('../controllers/realIntegrationController');
+const RealIntegrationController = new RealIntegrationControllerClass();
+const { protect: auth } = require('../middleware/auth');
 const rateLimit = require('express-rate-limit');
 
 // Rate limiting for integration operations
@@ -43,7 +44,7 @@ const dataRateLimit = rateLimit({
 router.get('/', 
   auth, 
   integrationRateLimit, 
-  RealIntegrationController.getUserIntegrations
+  RealIntegrationController.getUserIntegrations.bind(RealIntegrationController)
 );
 
 /**
@@ -53,7 +54,7 @@ router.get('/',
  */
 router.get('/types', 
   auth, 
-  RealIntegrationController.getIntegrationTypes
+  RealIntegrationController.getIntegrationTypes.bind(RealIntegrationController)
 );
 
 /**
@@ -63,7 +64,7 @@ router.get('/types',
  */
 router.get('/dashboard', 
   auth, 
-  RealIntegrationController.getDashboardOverview
+  RealIntegrationController.getDashboardOverview.bind(RealIntegrationController)
 );
 
 /**
@@ -75,7 +76,7 @@ router.get('/dashboard',
 router.post('/', 
   auth, 
   integrationRateLimit, 
-  RealIntegrationController.createIntegration
+  RealIntegrationController.createIntegration.bind(RealIntegrationController)
 );
 
 /**
@@ -86,7 +87,7 @@ router.post('/',
 router.get('/:id', 
   auth, 
   integrationRateLimit, 
-  RealIntegrationController.getIntegration
+  RealIntegrationController.getIntegration.bind(RealIntegrationController)
 );
 
 /**
@@ -98,7 +99,7 @@ router.get('/:id',
 router.put('/:id/configure', 
   auth, 
   integrationRateLimit, 
-  RealIntegrationController.configureIntegration
+  RealIntegrationController.configureIntegration.bind(RealIntegrationController)
 );
 
 /**
@@ -109,7 +110,7 @@ router.put('/:id/configure',
 router.post('/:id/test', 
   auth, 
   integrationRateLimit, 
-  RealIntegrationController.testIntegration
+  RealIntegrationController.testIntegration.bind(RealIntegrationController)
 );
 
 /**
@@ -121,7 +122,7 @@ router.post('/:id/test',
 router.put('/:id/toggle', 
   auth, 
   integrationRateLimit, 
-  RealIntegrationController.toggleIntegration
+  RealIntegrationController.toggleIntegration.bind(RealIntegrationController)
 );
 
 /**
@@ -132,7 +133,7 @@ router.put('/:id/toggle',
 router.delete('/:id', 
   auth, 
   integrationRateLimit, 
-  RealIntegrationController.deleteIntegration
+  RealIntegrationController.deleteIntegration.bind(RealIntegrationController)
 );
 
 /**
@@ -144,7 +145,7 @@ router.delete('/:id',
 router.post('/:id/sync', 
   auth, 
   dataRateLimit, 
-  RealIntegrationController.syncIntegration
+  RealIntegrationController.syncIntegration.bind(RealIntegrationController)
 );
 
 /**
@@ -156,7 +157,7 @@ router.post('/:id/sync',
 router.post('/:id/send', 
   auth, 
   dataRateLimit, 
-  RealIntegrationController.sendData
+  RealIntegrationController.sendData.bind(RealIntegrationController)
 );
 
 /**
@@ -168,7 +169,7 @@ router.post('/:id/send',
 router.get('/:id/receive', 
   auth, 
   dataRateLimit, 
-  RealIntegrationController.receiveData
+  RealIntegrationController.receiveData.bind(RealIntegrationController)
 );
 
 /**
@@ -180,7 +181,7 @@ router.get('/:id/receive',
 router.get('/:id/analytics', 
   auth, 
   integrationRateLimit, 
-  RealIntegrationController.getAnalytics
+  RealIntegrationController.getAnalytics.bind(RealIntegrationController)
 );
 
 /**
@@ -192,7 +193,7 @@ router.get('/:id/analytics',
  */
 router.post('/:id/webhook', 
   webhookRateLimit, 
-  RealIntegrationController.handleWebhook
+  RealIntegrationController.handleWebhook.bind(RealIntegrationController)
 );
 
 // ==================== BULK OPERATIONS ====================

@@ -23,30 +23,20 @@ import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
 import LikeButton from '../features/social/LikeButton';
 import ShareButton from '../features/social/ShareButton';
-import { getBlogLikeStatus } from '../api/blogs';
 
 const BlogCard = ({ blog, onLike, onShare, showAuthor = true }) => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const [initialLiked, setInitialLiked] = useState(false);
-  const [initialLikeCount, setInitialLikeCount] = useState(blog.likesCount || 0);
+  const [initialLiked, setInitialLiked] = useState(blog.engagement?.isLiked || false);
+  const [initialLikeCount, setInitialLikeCount] = useState(blog.engagement?.likesCount || blog.likesCount || 0);
 
   useEffect(() => {
-    // Check if user has liked this blog
-    if (user && blog._id) {
-      checkLikeStatus();
+    // Update from blog engagement data if available
+    if (blog.engagement) {
+      setInitialLiked(blog.engagement.isLiked || false);
+      setInitialLikeCount(blog.engagement.likesCount || 0);
     }
-  }, [user, blog._id]);
-
-  const checkLikeStatus = async () => {
-    try {
-      const response = await getBlogLikeStatus(blog._id);
-      setInitialLiked(response.isLiked);
-      setInitialLikeCount(response.likeCount);
-    } catch (error) {
-      console.error('Error checking like status:', error);
-    }
-  };
+  }, [blog.engagement]);
 
   const handleCardClick = () => {
     navigate(`/blogs/${blog._id}`);
@@ -142,11 +132,11 @@ const BlogCard = ({ blog, onLike, onShare, showAuthor = true }) => {
         )}
 
         {/* Location */}
-        {blog.location && (
+        {(blog.location || blog.geotag) && (
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <LocationOn sx={{ fontSize: 16, mr: 0.5, color: 'text.secondary' }} />
             <Typography variant="caption" color="text.secondary">
-              {blog.location.name || `${blog.location.coordinates[1]}, ${blog.location.coordinates[0]}`}
+              {blog.location || blog.geotag?.city || blog.geotag?.address || 'Unknown location'}
             </Typography>
           </Box>
         )}

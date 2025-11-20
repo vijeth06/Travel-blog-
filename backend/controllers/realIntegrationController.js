@@ -793,4 +793,4 @@ class RealIntegrationController {
   }
 }
 
-module.exports = new RealIntegrationController();
+module.exports = RealIntegrationController;

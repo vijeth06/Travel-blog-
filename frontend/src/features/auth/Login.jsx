@@ -6,13 +6,15 @@ import {
   Typography, 
   Box, 
   Alert,
-  InputAdornment
+  InputAdornment,
+  Divider
 } from '@mui/material';
 import { Email, Lock, Login as LoginIcon } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
+import GoogleAuthButton from '../../components/GoogleAuthButton';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -28,12 +30,12 @@ export default function Login() {
       try {
         const response = await fetch('http://localhost:5000/api/auth/profile');
         if (response.status === 401) {
-          setConnectionTest('✅ Server is running');
+          setConnectionTest('✅ Server is running and ready');
         } else {
-          setConnectionTest('⚠️ Server responded but with unexpected status');
+          setConnectionTest('✅ Server is running');
         }
       } catch (err) {
-        setConnectionTest('❌ Cannot connect to server');
+        setConnectionTest('❌ Cannot connect to server - Please start the backend');
         console.error('Connection test failed:', err);
       }
     };
@@ -80,6 +82,15 @@ export default function Login() {
             {error}
           </Alert>
         )}
+
+        {/* Google Sign In */}
+        <GoogleAuthButton mode="signin" />
+
+        <Divider sx={{ my: 3 }}>
+          <Typography variant="body2" color="text.secondary">
+            OR
+          </Typography>
+        </Divider>
 
         <form onSubmit={handleSubmit}>
           <TextField

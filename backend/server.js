@@ -44,6 +44,9 @@ const io = socketIo(server, {
   }
 });
 
+// Make io available to controllers
+app.set('io', io);
+
 // Socket.IO connection handling
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);

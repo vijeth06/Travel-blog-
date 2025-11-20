@@ -9,7 +9,7 @@ import { useSocket } from './hooks/useSocket';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
-import SocialFeed from './pages/SocialFeed';
+import SocialFeedPage from './pages/SocialFeedPage';
 import Login from './features/auth/Login';
 import Register from './features/auth/Register';
 import Profile from './features/auth/Profile';
@@ -35,6 +35,7 @@ import SavedStories from './pages/SavedStories';
 import AuthTest from './components/AuthTest';
 import ConnectionTest from './components/ConnectionTest';
 import BlogDisplayTest from './components/BlogDisplayTest';
+import GoogleAuthCallback from './components/GoogleAuthCallback';
 import SearchPage from './components/SearchPage';
 import ContinentsPage from './pages/ContinentsPage';
 import ContinentPage from './pages/ContinentPage';
@@ -48,7 +49,28 @@ import MobilePage from './pages/MobilePage';
 import PremiumPage from './pages/PremiumPage';
 import IntegrationsPage from './pages/IntegrationsPage';
 import AdvancedSearchPage from './pages/AdvancedSearchPage';
+import ChatPage from './pages/ChatPage';
+import GalleryPage from './pages/GalleryPage';
+import ItineraryPage from './pages/ItineraryPage';
+import ReviewsPage from './pages/ReviewsPage';
 import TravelCalendarPage from './pages/TravelCalendarPage';
+import TripsPage from './pages/TripsPage';
+import TripDetailPage from './pages/TripDetailPage';
+import SharedTripPage from './pages/SharedTripPage';
+import CollectionsPage from './pages/CollectionsPage';
+import CollectionDetailPage from './pages/CollectionDetailPage';
+import PremiumTemplatesPage from './pages/PremiumTemplatesPage';
+import TopicFollowsPage from './pages/TopicFollowsPage';
+import BadgesPage from './pages/BadgesPage';
+import TravelerDashboardPage from './pages/TravelerDashboardPage';
+import CreatorAnalyticsPage from './pages/CreatorAnalyticsPage';
+import CountriesPage from './pages/CountriesPage';
+import CountryPage from './pages/CountryPage';
+import InteractiveMapPage from './pages/InteractiveMapPage';
+import BlogPage from './pages/BlogPage';
+import SocialFeed from './pages/SocialFeed';
+import SimpleDashboard from './pages/SimpleDashboard';
+import { AuthProvider } from './contexts/EnhancedAuthContext';
 import './styles/themes.css';
 
 const theme = createTheme({
@@ -290,9 +312,10 @@ function AppContent() {
           <Box sx={{ flex: 1 }}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/feed" element={<ProtectedRoute><SocialFeed /></ProtectedRoute>} />
+              <Route path="/feed" element={<ProtectedRoute><SocialFeedPage /></ProtectedRoute>} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/auth/callback" element={<GoogleAuthCallback />} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/blogs" element={<BlogList />} />
@@ -304,6 +327,16 @@ function AppContent() {
               <Route path="/continents" element={<ContinentsPage />} />
               <Route path="/continents/:identifier" element={<ContinentPage />} />
               <Route path="/favorite-places" element={<FavoritePlacesPage />} />
+              <Route path="/trips" element={<ProtectedRoute><TripsPage /></ProtectedRoute>} />
+              <Route path="/trips/:id" element={<ProtectedRoute><TripDetailPage /></ProtectedRoute>} />
+              <Route path="/trips/shared/:token" element={<SharedTripPage />} />
+              <Route path="/collections" element={<ProtectedRoute><CollectionsPage /></ProtectedRoute>} />
+              <Route path="/collections/:id" element={<ProtectedRoute><CollectionDetailPage /></ProtectedRoute>} />
+              <Route path="/premium-templates" element={<ProtectedRoute><PremiumTemplatesPage /></ProtectedRoute>} />
+              <Route path="/topics" element={<ProtectedRoute><TopicFollowsPage /></ProtectedRoute>} />
+              <Route path="/badges" element={<ProtectedRoute><BadgesPage /></ProtectedRoute>} />
+              <Route path="/traveler-dashboard" element={<ProtectedRoute><TravelerDashboardPage /></ProtectedRoute>} />
+              <Route path="/creator-analytics" element={<ProtectedRoute><CreatorAnalyticsPage /></ProtectedRoute>} />
               <Route path="/packages" element={<Packages />} />
               <Route path="/packages/:id" element={<PackageDetails />} />
               <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
@@ -329,6 +362,17 @@ function AppContent() {
               <Route path="/premium" element={<PremiumPage />} />
               <Route path="/integrations" element={<ProtectedRoute><IntegrationsPage /></ProtectedRoute>} />
               <Route path="/calendar" element={<ProtectedRoute><TravelCalendarPage /></ProtectedRoute>} />
+              <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+              <Route path="/gallery" element={<ProtectedRoute><GalleryPage /></ProtectedRoute>} />
+              <Route path="/itinerary" element={<ProtectedRoute><ItineraryPage /></ProtectedRoute>} />
+              <Route path="/itinerary/:id" element={<ProtectedRoute><ItineraryPage /></ProtectedRoute>} />
+              <Route path="/reviews" element={<ProtectedRoute><ReviewsPage showUserReviews={true} /></ProtectedRoute>} />
+              <Route path="/countries" element={<CountriesPage />} />
+              <Route path="/countries/:identifier" element={<CountryPage />} />
+              <Route path="/map/interactive" element={<InteractiveMapPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/social" element={<ProtectedRoute><SocialFeed /></ProtectedRoute>} />
+              <Route path="/simple-dashboard" element={<ProtectedRoute><SimpleDashboard /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Box>
@@ -342,7 +386,9 @@ function AppContent() {
 function App() {
   return (
     <Provider store={store}>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </Provider>
   );
 }

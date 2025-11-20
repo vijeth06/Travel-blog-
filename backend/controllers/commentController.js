@@ -1,5 +1,6 @@
 const Comment = require('../models/Comment');
 const Blog = require('../models/Blog');
+const OnboardingService = require('../services/onboardingService');
 
 // @desc    Create a new comment
 // @route   POST /api/comments
@@ -58,6 +59,44 @@ exports.createComment = async (req, res) => {
           comment: populatedComment
         });
       }
+      
+      // Create notification for blog author
+      if (blogPost.author.toString() !== req.user.id.toString()) {
+        try {
+          const Notification = require('../models/Notification');
+          await Notification.create({
+            recipient: blogPost.author,
+            sender: req.user.id,
+            type: parentComment ? 'reply' : 'comment',
+            title: parentComment ? 'New Reply' : 'New Comment',
+            message: `${req.user.name} ${parentComment ? 'replied to' : 'commented on'} your blog: "${content.substring(0, 50)}${content.length > 50 ? '...' : ''}"`,
+            link: `/blogs/${blog}#comment-${comment._id}`,
+            data: {
+              blogId: blog,
+              commentId: comment._id
+            }
+          });
+          
+          // Emit notification via Socket.IO
+          if (io) {
+            io.to(`user_${blogPost.author}`).emit('notification', {
+              type: parentComment ? 'reply' : 'comment',
+              message: `${req.user.name} ${parentComment ? 'replied to' : 'commented on'} your blog`
+            });
+          }
+        } catch (error) {
+          console.error('Error creating comment notification:', error);
+        }
+      }
+    }
+
+    // Mark onboarding step when user posts first comment (regardless of moderation status)
+    try {
+      if (req.user && req.user.id) {
+        await OnboardingService.markStepCompleted(req.user.id, 'post_first_comment');
+      }
+    } catch (err) {
+      console.error('Onboarding post_first_comment hook error:', err.message);
     }
 
     res.status(201).json({

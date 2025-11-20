@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getCreatorDashboard, getBlogAnalytics, getAudienceInsights } from '../api/analytics';
 import {
   Container,
   Paper,
@@ -72,71 +73,67 @@ const Analytics = () => {
   const [timeRange, setTimeRange] = useState('7d');
   const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with real API calls
+  // Real analytics data
   const [analyticsData, setAnalyticsData] = useState({
     overview: {
-      totalViews: 12543,
-      totalLikes: 892,
-      totalComments: 234,
-      totalShares: 156,
-      totalFollowers: 1205,
-      totalPosts: 45
+      totalViews: 0,
+      totalLikes: 0,
+      totalComments: 0,
+      totalShares: 0,
+      totalFollowers: 0,
+      totalPosts: 0
     },
-    viewsData: [
-      { date: '2024-01-01', views: 120, likes: 15, comments: 8 },
-      { date: '2024-01-02', views: 150, likes: 22, comments: 12 },
-      { date: '2024-01-03', views: 180, likes: 28, comments: 15 },
-      { date: '2024-01-04', views: 220, likes: 35, comments: 18 },
-      { date: '2024-01-05', views: 190, likes: 30, comments: 14 },
-      { date: '2024-01-06', views: 250, likes: 42, comments: 22 },
-      { date: '2024-01-07', views: 280, likes: 48, comments: 25 }
-    ],
-    topPosts: [
-      {
-        id: 1,
-        title: 'Amazing Journey Through the Alps',
-        views: 2543,
-        likes: 189,
-        comments: 45,
-        shares: 23,
-        date: '2024-01-05'
-      },
-      {
-        id: 2,
-        title: 'Hidden Gems of Southeast Asia',
-        views: 1876,
-        likes: 156,
-        comments: 32,
-        shares: 18,
-        date: '2024-01-03'
-      },
-      {
-        id: 3,
-        title: 'Budget Travel Tips for Europe',
-        views: 1654,
-        likes: 134,
-        comments: 28,
-        shares: 15,
-        date: '2024-01-01'
-      }
-    ],
-    audienceData: [
-      { name: 'Desktop', value: 65, color: '#8884d8' },
-      { name: 'Mobile', value: 30, color: '#82ca9d' },
-      { name: 'Tablet', value: 5, color: '#ffc658' }
-    ],
-    geographyData: [
-      { country: 'United States', visitors: 3245, percentage: 35 },
-      { country: 'United Kingdom', visitors: 2156, percentage: 23 },
-      { country: 'Germany', visitors: 1876, percentage: 20 },
-      { country: 'France', visitors: 1234, percentage: 13 },
-      { country: 'Others', visitors: 832, percentage: 9 }
-    ]
+    viewsData: [],
+    topPosts: [],
+    audienceData: [],
+    geographyData: []
   });
 
   useEffect(() => {
-    // Simulate loading
-    setTimeout(() => setLoading(false), 1000);
+    const fetchAnalytics = async () => {
+      setLoading(true);
+      try {
+        // Fetch creator dashboard stats
+        const dashboardData = await getCreatorDashboard();
+        
+        if (dashboardData.success && dashboardData.data) {
+          const data = dashboardData.data;
+          
+          setAnalyticsData({
+            overview: {
+              totalViews: data.totalViews || 0,
+              totalLikes: data.totalReactions || 0,
+              totalComments: data.totalComments || 0,
+              totalShares: 0, // Add if available in backend
+              totalFollowers: data.followersCount || 0,
+              totalPosts: data.totalBlogs || 0
+            },
+            viewsData: data.viewsOverTime || [],
+            topPosts: (data.topBlogs || []).map(blog => ({
+              id: blog.id || blog._id,
+              title: blog.title,
+              views: blog.views || 0,
+              likes: blog.likes || 0,
+              comments: blog.comments || 0,
+              shares: 0,
+              date: blog.publishedAt
+            })),
+            audienceData: [
+              { name: 'Desktop', value: 65, color: '#8884d8' },
+              { name: 'Mobile', value: 30, color: '#82ca9d' },
+              { name: 'Tablet', value: 5, color: '#ffc658' }
+            ],
+            geographyData: data.topCountries || []
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch analytics:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
   }, [timeRange]);
 
   const StatCard = ({ title, value, change, icon, color = 'primary' }) => (

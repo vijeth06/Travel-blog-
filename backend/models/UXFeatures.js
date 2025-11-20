@@ -358,12 +358,12 @@ reviewSchema.index({
 });
 
 module.exports = {
-    ThemePreferences: mongoose.model('ThemePreferences', themePreferencesSchema),
-    Bookmark: mongoose.model('Bookmark', bookmarkSchema),
-    BookmarkFolder: mongoose.model('BookmarkFolder', bookmarkFolderSchema),
-    SearchHistory: mongoose.model('SearchHistory', searchHistorySchema),
-    QuickAction: mongoose.model('QuickAction', quickActionSchema),
-    AccessibilityPreferences: mongoose.model('AccessibilityPreferences', accessibilitySchema),
-    UXMetrics: mongoose.model('UXMetrics', uxMetricsSchema),
-    NotificationPreferences: mongoose.model('NotificationPreferences', notificationPreferencesSchema)
+    ThemePreferences: mongoose.models.ThemePreferences || mongoose.model('ThemePreferences', themePreferencesSchema),
+    Bookmark: mongoose.models.Bookmark || mongoose.model('Bookmark', bookmarkSchema),
+    BookmarkFolder: mongoose.models.BookmarkFolder || mongoose.model('BookmarkFolder', bookmarkFolderSchema),
+    SearchHistory: mongoose.models.SearchHistory || mongoose.model('SearchHistory', searchHistorySchema),
+    QuickAction: mongoose.models.QuickAction || mongoose.model('QuickAction', quickActionSchema),
+    AccessibilityPreferences: mongoose.models.AccessibilityPreferences || mongoose.model('AccessibilityPreferences', accessibilitySchema),
+    UXMetrics: mongoose.models.UXMetrics || mongoose.model('UXMetrics', uxMetricsSchema),
+    NotificationPreferences: mongoose.models.NotificationPreferences || mongoose.model('NotificationPreferences', notificationPreferencesSchema)
 };

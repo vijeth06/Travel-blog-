@@ -18,7 +18,9 @@ import {
   IconButton,
   Paper,
   Breadcrumbs,
-  Link as MuiLink
+  Link as MuiLink,
+  Tooltip,
+  Badge
 } from '@mui/material';
 import { 
   LocationOn, 
@@ -30,10 +32,16 @@ import {
   Share,
   Bookmark,
   BookmarkBorder,
-  ArrowBack
+  ArrowBack,
+  Verified,
+  TrendingUp,
+  EmojiEvents
 } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import SaveToTripButton from '../../components/SaveToTripButton';
+import ReactionPicker from '../../components/ReactionPicker';
+import ReviewsPage from '../../pages/ReviewsPage';
 
 // Sample blog data
 const sampleBlog = {
@@ -93,14 +101,69 @@ export default function BlogDetail() {
   const [comment, setComment] = useState('');
 
   useEffect(() => {
-    setTimeout(() => {
-      setBlog(sampleBlog);
-      setLoading(false);
-    }, 1000);
-  }, [id]);
+    const fetchBlog = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/blogs/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setBlog(data.blog || data);
+          
+          // Check if blog is bookmarked
+          try {
+            const bookmarks = await getUserBookmarks(null, 'blog');
+            const isBookmarked = bookmarks.some(b => b.targetId?._id === id || b.targetId === id);
+            setBookmarked(isBookmarked);
+          } catch (err) {
+            console.error('Failed to check bookmark status:', err);
+          }
+        } else {
+          console.error('Failed to fetch blog');
+          navigate('/blogs');
+        }
+      } catch (error) {
+        console.error('Error fetching blog:', error);
+        navigate('/blogs');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (id) {
+      fetchBlog();
+    }
+  }, [id, navigate]);
 
   const handleLike = () => setLiked(!liked);
-  const handleBookmark = () => setBookmarked(!bookmarked);
+  
+  const handleBookmark = async () => {
+    try {
+      if (bookmarked) {
+        // Remove bookmark - need to find the bookmark ID first
+        const bookmarks = await getUserBookmarks(null, 'blog');
+        const existingBookmark = bookmarks.find(b => b.targetId?._id === id || b.targetId === id);
+        if (existingBookmark) {
+          await removeBookmark(existingBookmark._id);
+        }
+        setBookmarked(false);
+      } else {
+        // Create bookmark
+        await createBookmark({
+          targetType: 'blog',
+          targetId: id,
+          title: blog?.title || 'Untitled'
+        });
+        setBookmarked(true);
+      }
+    } catch (error) {
+      console.error('Failed to toggle bookmark:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -167,6 +230,52 @@ export default function BlogDetail() {
           }} />
           <Rating value={blog.rating} precision={0.1} readOnly />
           <Typography variant="body2" color="text.secondary">({blog.rating})</Typography>
+          
+          {/* Quality Indicators */}
+          {blog.views > 1000 && (
+            <Tooltip title="Popular Content - High engagement from readers">
+              <Chip 
+                icon={<TrendingUp />} 
+                label="Trending" 
+                color="success" 
+                size="small"
+                variant="outlined"
+              />
+            </Tooltip>
+          )}
+          {blog.likes.length > 100 && (
+            <Tooltip title="Highly Rated - Loved by the community">
+              <Chip 
+                icon={<Verified />} 
+                label="Highly Rated" 
+                color="primary" 
+                size="small"
+                variant="outlined"
+              />
+            </Tooltip>
+          )}
+          {blog.comments.length > 50 && (
+            <Tooltip title="Active Discussion - Lots of reader engagement">
+              <Chip 
+                icon={<Comment />} 
+                label="Active Discussion" 
+                color="info" 
+                size="small"
+                variant="outlined"
+              />
+            </Tooltip>
+          )}
+          {blog.rating >= 4.5 && (
+            <Tooltip title="Editor's Choice - Exceptional quality content">
+              <Chip 
+                icon={<EmojiEvents />} 
+                label="Editor's Choice" 
+                color="warning" 
+                size="small"
+                variant="outlined"
+              />
+            </Tooltip>
+          )}
         </Box>
       </Box>
 
@@ -227,6 +336,9 @@ export default function BlogDetail() {
         >
           Share
         </Button>
+
+        <SaveToTripButton entityId={blog._id} type="blog" />
+        <ReactionPicker targetType="blog" targetId={blog._id} />
       </Box>
 
       {/* Content */}
@@ -369,6 +481,15 @@ export default function BlogDetail() {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Reviews Section */}
+      <Box sx={{ mt: 6 }}>
+        <ReviewsPage 
+          targetType="blog" 
+          targetId={id} 
+          targetTitle={blog.title}
+        />
+      </Box>
     </Container>
   );
 }

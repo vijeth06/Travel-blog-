@@ -65,7 +65,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { getUserProfile } from '../redux/authSlice';
 import { getBlogs } from '../api/blogs';
+import { getCreatorDashboard } from '../api/analytics';
+import { getNotifications } from '../api/notifications';
 import { styled, alpha, keyframes } from '@mui/material/styles';
+import TimelineWidget from '../components/TimelineWidget';
+import OnboardingChecklist from '../components/onboarding/OnboardingChecklist';
 
 // Custom animations
 const fadeIn = keyframes`
@@ -226,29 +230,56 @@ export default function Dashboard() {
           ...prev,
           totalComments,
           totalViews: totalViews || prev.totalViews,
-          totalLikes: totalLikes || prev.totalLikes,
-          revenue: Math.floor(totalViews * 0.05), // Mock revenue calculation
-          bookmarks: Math.floor(Math.random() * 50) + 10
+          totalLikes: totalLikes || prev.totalLikes
         }));
+        
+        // Fetch real analytics data
+        getCreatorDashboard()
+          .then(analytics => {
+            setStats(prev => ({
+              ...prev,
+              revenue: analytics.data?.revenue || 0,
+              bookmarks: analytics.data?.totalBookmarks || 0
+            }));
+          })
+          .catch(err => console.error('Analytics error:', err));
       })
       .catch(console.error);
 
-    // Mock recent activity
-    setRecentActivity([
-      { id: 1, type: 'like', message: 'Sarah liked your post "Amazing Swiss Alps Adventure"', time: '2 minutes ago', avatar: 'S' },
-      { id: 2, type: 'comment', message: 'John commented on "Tropical Paradise in Maldives"', time: '15 minutes ago', avatar: 'J' },
-      { id: 3, type: 'follow', message: 'Emma started following you', time: '1 hour ago', avatar: 'E' },
-      { id: 4, type: 'view', message: 'Your post reached 1000 views!', time: '2 hours ago', avatar: '👁️' },
-      { id: 5, type: 'bookmark', message: 'Mike bookmarked your "Cultural Immersion in Kyoto"', time: '3 hours ago', avatar: 'M' }
-    ]);
+    // Fetch real recent activity from notifications
+    getNotifications({ limit: 5, type: ['like', 'comment', 'follow'] })
+      .then(response => {
+        const activities = response.data?.notifications?.map(notif => ({
+          id: notif._id,
+          type: notif.type,
+          message: notif.message || notif.title,
+          time: new Date(notif.createdAt).toLocaleString(),
+          avatar: notif.sender?.name?.charAt(0) || '?'
+        })) || [];
+        setRecentActivity(activities);
+      })
+      .catch(err => {
+        console.error('Recent activity error:', err);
+        setRecentActivity([]);
+      });
 
-    // Mock notifications
-    setNotifications([
-      { id: 1, type: 'success', message: 'Your post "Swiss Alps Adventure" is trending!', unread: true },
-      { id: 2, type: 'info', message: 'Weekly analytics report is ready', unread: true },
-      { id: 3, type: 'warning', message: 'Complete your profile to get more visibility', unread: false },
-      { id: 4, type: 'error', message: 'Failed to upload image. Please try again.', unread: false }
-    ]);
+    // Fetch real notifications
+    getNotifications({ limit: 5, unreadOnly: false })
+      .then(response => {
+        const notifs = response.data?.notifications?.map(notif => ({
+          id: notif._id,
+          type: notif.type === 'system' ? 'info' : 'success',
+          message: notif.message || notif.title,
+          unread: !notif.read
+        })) || [];
+        setNotifications(notifs);
+      })
+      .catch(err => {
+        console.error('Notifications error:', err);
+        setNotifications([
+          { id: 1, type: 'info', message: 'Welcome to your dashboard!', unread: false }
+        ]);
+      });
 
     setLoading(false);
   }, [navigate, dispatch, isAuthenticated, token, user]);
@@ -646,8 +677,14 @@ export default function Dashboard() {
 
         {/* Right Column */}
         <Grid item xs={12} lg={4}>
-          {/* Recent Activity */}
-          <DashboardCard sx={{ mb: 4 }}>
+             {/* Journey Timeline */}
+             <DashboardCard sx={{ mb: 4 }}>
+               <CardContent>
+                 <TimelineWidget />
+               </CardContent>
+             </DashboardCard>
+             {/* Recent Activity */}
+             <DashboardCard sx={{ mb: 4 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                 <Typography variant="h6" fontWeight={700}>

@@ -5,6 +5,48 @@ const Package = require('../models/Package');
 const Country = require('../models/Country');
 const { protect, optionalAuth } = require('../middleware/auth');
 
+// Simple search endpoint
+router.get('/', optionalAuth, async (req, res) => {
+  try {
+    const { query, type = 'blogs', limit = 10 } = req.query;
+
+    if (!query) {
+      return res.status(400).json({ message: 'Search query required' });
+    }
+
+    let results = [];
+    const searchRegex = new RegExp(query, 'i');
+
+    if (type === 'blogs') {
+      results = await Blog.find({
+        $or: [
+          { title: searchRegex },
+          { content: searchRegex },
+          { tags: searchRegex }
+        ]
+      })
+        .populate('author', 'name avatar')
+        .limit(parseInt(limit))
+        .sort({ createdAt: -1 });
+    } else if (type === 'packages') {
+      results = await Package.find({
+        $or: [
+          { title: searchRegex },
+          { description: searchRegex },
+          { destination: searchRegex }
+        ]
+      })
+        .limit(parseInt(limit))
+        .sort({ createdAt: -1 });
+    }
+
+    res.json({ results, count: results.length });
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Advanced search endpoint
 router.get('/advanced', optionalAuth, async (req, res) => {
   try {
@@ -394,6 +436,38 @@ router.get('/filters', async (req, res) => {
   } catch (error) {
     console.error('Filter options error:', error);
     res.status(500).json({ message: 'Failed to get filter options' });
+  }
+});
+
+// Search suggestions endpoint
+router.get('/suggestions', optionalAuth, async (req, res) => {
+  try {
+    const { query, limit = 5 } = req.query;
+
+    if (!query || query.length < 2) {
+      return res.json({ suggestions: [] });
+    }
+
+    const searchRegex = new RegExp(query, 'i');
+    const suggestions = [];
+
+    // Get blog title suggestions
+    const blogSuggestions = await Blog.find({ title: searchRegex })
+      .select('title')
+      .limit(parseInt(limit));
+
+    // Get destination suggestions from packages
+    const destinations = await Package.distinct('destination', {
+      destination: searchRegex
+    }).limit(parseInt(limit));
+
+    blogSuggestions.forEach(blog => suggestions.push(blog.title));
+    destinations.forEach(dest => suggestions.push(dest));
+
+    res.json({ suggestions: [...new Set(suggestions)].slice(0, limit) });
+  } catch (error) {
+    console.error('Suggestions error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

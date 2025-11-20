@@ -34,12 +34,13 @@ const validateReview = [
     .isLength({ min: 10, max: 2000 })
     .withMessage('Content must be between 10 and 2000 characters'),
   body('overallRating')
-    .isInt({ min: 1, max: 5 })
+    .isFloat({ min: 1, max: 5 })
     .withMessage('Overall rating must be between 1 and 5'),
   body('visitDate')
     .isISO8601()
     .withMessage('Invalid visit date'),
   body('wouldRecommend')
+    .optional()
     .isBoolean()
     .withMessage('Would recommend must be true or false')
 ];

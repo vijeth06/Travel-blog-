@@ -34,7 +34,7 @@ exports.createReview = async (req, res) => {
 
     // Check if user already reviewed this item
     const existingReview = await Review.findOne({
-      author: req.user.id,
+      author: req.user._id,
       targetType,
       targetId
     });
@@ -46,7 +46,7 @@ exports.createReview = async (req, res) => {
     }
 
     const review = new Review({
-      author: req.user.id,
+      author: req.user._id,
       targetType,
       targetId,
       title,

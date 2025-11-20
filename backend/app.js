@@ -8,6 +8,7 @@ const { generalLimiter } = require('./middleware/rateLimiter');
 const passport = require('./config/passport');
 const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/auth');
+const enhancedAuthRoutes = require('./routes/enhancedAuth');
 const blogRoutes = require('./routes/blogs');
 const commentRoutes = require('./routes/comments');
 const categoryRoutes = require('./routes/categories');
@@ -37,15 +38,31 @@ const videoBlogRoutes = require('./routes/videoBlogs');
 const photo360Routes = require('./routes/photo360');
 const monetizationRoutes = require('./routes/monetization');
 const analyticsRoutes = require('./routes/analytics');
+const timelineRoutes = require('./routes/timeline');
 const mobileRoutes = require('./routes/mobile');
-const integrationRoutes = require('./routes/realIntegrations');
-const premiumRoutes = require('./routes/realPremium');
-const realMobileOptimizationRoutes = require('./routes/realMobileOptimization');
+const tripBundleRoutes = require('./routes/tripBundles');
+const tripRoutes = require('./routes/trips');
+const collectionRoutes = require('./routes/collections');
+const reactionRoutes = require('./routes/reactions');
+const topicFollowRoutes = require('./routes/topicFollows');
+const badgeRoutes = require('./routes/badges');
+const premiumTemplateRoutes = require('./routes/premiumTemplates');
+const exportRoutes = require('./routes/export');
+const travelerAnalyticsRoutes = require('./routes/travelerAnalytics');
+const creatorAnalyticsRoutes = require('./routes/creatorAnalytics');
+// const integrationRoutes = require('./routes/realIntegrations');
+// const premiumRoutes = require('./routes/realPremium');
+// const realMobileOptimizationRoutes = require('./routes/realMobileOptimization');
+const certificationRoutes = require('./routes/realCertification');
 const uxRoutes = require('./routes/ux');
 const highImpactRoutes = require('./routes/highImpact');
 const searchRoutes = require('./routes/search');
 const reviewRoutes = require('./routes/reviews');
 const followRoutes = require('./routes/followRoutes');
+const onboardingRoutes = require('./routes/onboardingRoutes');
+const chatRoutes = require('./routes/chat');
+const galleryRoutes = require('./routes/gallery');
+const itineraryRoutes = require('./routes/itinerary');
 
 const app = express();
 
@@ -73,14 +90,33 @@ app.use(compression());
 // Rate limiting
 app.use(generalLimiter);
 
+// CORS configuration - must be before routes
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    process.env.FRONTEND_URL
-  ].filter(Boolean),
-  credentials: true
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all origins in development
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -102,6 +138,10 @@ app.use(passport.session());
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Enhanced Authentication (New System)
+app.use('/api/auth/v2', enhancedAuthRoutes);
+
+// Original Authentication (Legacy)
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/comments', commentRoutes);
@@ -132,15 +172,31 @@ app.use('/api/video-blogs', videoBlogRoutes);
 app.use('/api/360-photos', photo360Routes);
 app.use('/api/monetization', monetizationRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/timeline', timelineRoutes);
 app.use('/api/mobile', mobileRoutes);
-app.use('/api/integrations', integrationRoutes);
-app.use('/api/premium', premiumRoutes);
-app.use('/api/mobile', realMobileOptimizationRoutes);
+app.use('/api/trip-bundles', tripBundleRoutes);
+app.use('/api/trips', tripRoutes);
+app.use('/api/collections', collectionRoutes);
+app.use('/api/reactions', reactionRoutes);
+app.use('/api/topic-follows', topicFollowRoutes);
+app.use('/api/badges', badgeRoutes);
+app.use('/api/premium-templates', premiumTemplateRoutes);
+app.use('/api/export', exportRoutes);
+app.use('/api/traveler-analytics', travelerAnalyticsRoutes);
+app.use('/api/creator-analytics', creatorAnalyticsRoutes);
+// app.use('/api/integrations', integrationRoutes);
+// app.use('/api/premium', premiumRoutes);
+// app.use('/api/mobile', realMobileOptimizationRoutes);
 app.use('/api/ux', uxRoutes);
 app.use('/api/high-impact', highImpactRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/certificates', certificationRoutes);
+app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/follow', followRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/gallery', galleryRoutes);
+app.use('/api/itinerary', itineraryRoutes);
 
 app.get('/', (req, res) => res.send('Travel Blog API running'));
 

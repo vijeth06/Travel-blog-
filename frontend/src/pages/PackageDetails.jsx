@@ -43,6 +43,8 @@ import {
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import BookingForm from '../components/BookingForm';
+import SaveToTripButton from '../components/SaveToTripButton';
+import ReviewsPage from './ReviewsPage';
 
 const PackageDetails = () => {
   const { id } = useParams();
@@ -239,6 +241,7 @@ const PackageDetails = () => {
             <Button variant="outlined" startIcon={<Share />}>
               Share
             </Button>
+            <SaveToTripButton entityId={pkg._id} type="package" />
           </Box>
         </Box>
 
@@ -481,6 +484,103 @@ const PackageDetails = () => {
               </Button>
             </Box>
 
+            <Divider sx={{ my: 3 }}>
+              <Typography variant="caption" color="text.secondary">
+                OR BOOK DIRECTLY
+              </Typography>
+            </Divider>
+
+            {/* Affiliate Booking Links */}
+            <Box>
+              <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
+                Compare prices and book with our trusted partners:
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  fullWidth
+                  startIcon={<Flight />}
+                  href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(pkg.location)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+                >
+                  <Box sx={{ flex: 1, textAlign: 'left' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      Booking.com
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Hotels & Accommodation
+                    </Typography>
+                  </Box>
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  fullWidth
+                  startIcon={<Hotel />}
+                  href={`https://www.airbnb.com/s/${encodeURIComponent(pkg.location)}/homes`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+                >
+                  <Box sx={{ flex: 1, textAlign: 'left' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      Airbnb
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Unique Stays & Experiences
+                    </Typography>
+                  </Box>
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  fullWidth
+                  startIcon={<Flight />}
+                  href={`https://www.skyscanner.com/transport/flights/${encodeURIComponent(pkg.location)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+                >
+                  <Box sx={{ flex: 1, textAlign: 'left' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      Skyscanner
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Flight Comparison
+                    </Typography>
+                  </Box>
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  fullWidth
+                  startIcon={<DirectionsCar />}
+                  href={`https://www.rentalcars.com/SearchResults.do?city=${encodeURIComponent(pkg.location)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+                >
+                  <Box sx={{ flex: 1, textAlign: 'left' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      RentalCars.com
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Car Rentals
+                    </Typography>
+                  </Box>
+                </Button>
+              </Box>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2, fontStyle: 'italic' }}>
+                * We may earn a commission from bookings made through these links at no extra cost to you.
+              </Typography>
+            </Box>
+
             {hasDiscount && (
               <Alert severity="info" sx={{ mt: 2 }}>
                 <Typography variant="body2">
@@ -494,6 +594,15 @@ const PackageDetails = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Reviews Section */}
+      <Box sx={{ mt: 6 }}>
+        <ReviewsPage 
+          targetType="package" 
+          targetId={id} 
+          targetTitle={pkg?.title}
+        />
+      </Box>
 
       {/* Booking Form Dialog */}
       <Dialog 

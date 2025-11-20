@@ -31,7 +31,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
-import { getBlogById, likeBlog, unlikeBlog, bookmarkBlog, unbookmarkBlog } from '../api/blogs';
+import { getBlogById, toggleBlogLike } from '../api/blogs';
 import CommentSection from '../features/comments/CommentSection';
 
 const BlogPage = () => {
@@ -78,15 +78,9 @@ const BlogPage = () => {
     }
 
     try {
-      if (isLiked) {
-        await unlikeBlog(id);
-        setIsLiked(false);
-        setLikesCount(prev => prev - 1);
-      } else {
-        await likeBlog(id);
-        setIsLiked(true);
-        setLikesCount(prev => prev + 1);
-      }
+      await toggleBlogLike(id);
+      setIsLiked(!isLiked);
+      setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
     } catch (error) {
       console.error('Error toggling like:', error);
     }
@@ -99,12 +93,17 @@ const BlogPage = () => {
     }
 
     try {
-      if (isBookmarked) {
-        await unbookmarkBlog(id);
-        setIsBookmarked(false);
-      } else {
-        await bookmarkBlog(id);
-        setIsBookmarked(true);
+      // Toggle bookmark via API
+      const response = await fetch(`http://localhost:5000/api/blogs/${id}/bookmark`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        setIsBookmarked(!isBookmarked);
       }
     } catch (error) {
       console.error('Error toggling bookmark:', error);

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { getUserBookmarks, removeBookmark } from '../api/bookmarks';
+import { getBlogs } from '../api/blogs';
 import {
   Container,
   Typography,
@@ -40,59 +42,54 @@ const SavedStories = () => {
   
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
-  // Mock saved stories data
+  // Fetch real saved stories from bookmarks
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
 
-    // Simulate loading saved stories
-    setTimeout(() => {
-      setSavedStories([
-        {
-          id: 1,
-          title: 'Amazing Journey Through the Swiss Alps',
-          excerpt: 'Discover the breathtaking beauty of Switzerland\'s mountain ranges...',
-          author: 'John Doe',
-          image: 'https://source.unsplash.com/800x400/?alps,mountains',
-          savedDate: '2024-01-15',
-          views: 1234,
-          likes: 89,
-          comments: 23,
-          category: 'Adventure'
-        },
-        {
-          id: 2,
-          title: 'Hidden Gems of Southeast Asia',
-          excerpt: 'Explore the lesser-known destinations that will take your breath away...',
-          author: 'Sarah Wilson',
-          image: 'https://source.unsplash.com/800x400/?asia,temple',
-          savedDate: '2024-01-12',
-          views: 987,
-          likes: 67,
-          comments: 15,
-          category: 'Culture'
-        },
-        {
-          id: 3,
-          title: 'Budget Travel Tips for Europe',
-          excerpt: 'How to explore Europe without breaking the bank...',
-          author: 'Mike Johnson',
-          image: 'https://source.unsplash.com/800x400/?europe,travel',
-          savedDate: '2024-01-10',
-          views: 756,
-          likes: 45,
-          comments: 12,
-          category: 'Budget'
+    const fetchSavedStories = async () => {
+      setLoading(true);
+      try {
+        // Fetch bookmarks
+        const bookmarksData = await getUserBookmarks(null, 'blog');
+        
+        // If bookmarks contain populated blog data
+        if (bookmarksData && Array.isArray(bookmarksData)) {
+          const stories = bookmarksData.map(bookmark => ({
+            id: bookmark._id,
+            blogId: bookmark.targetId?._id || bookmark.targetId,
+            title: bookmark.title || bookmark.targetId?.title || 'Untitled',
+            excerpt: bookmark.targetId?.excerpt || bookmark.targetId?.content?.substring(0, 150) || '',
+            author: bookmark.targetId?.author?.name || 'Unknown',
+            image: bookmark.targetId?.coverImage || 'https://source.unsplash.com/800x400/?travel',
+            savedDate: bookmark.createdAt,
+            views: bookmark.targetId?.views || 0,
+            likes: bookmark.targetId?.likesCount || 0,
+            comments: bookmark.targetId?.commentsCount || 0,
+            category: bookmark.targetId?.category?.name || 'Travel'
+          }));
+          setSavedStories(stories);
         }
-      ]);
-      setLoading(false);
-    }, 1000);
+      } catch (error) {
+        console.error('Failed to fetch saved stories:', error);
+        setSavedStories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSavedStories();
   }, [isAuthenticated, navigate]);
 
-  const handleRemoveFromSaved = (storyId) => {
-    setSavedStories(prev => prev.filter(story => story.id !== storyId));
+  const handleRemoveFromSaved = async (storyId) => {
+    try {
+      await removeBookmark(storyId);
+      setSavedStories(prev => prev.filter(story => story.id !== storyId));
+    } catch (error) {
+      console.error('Failed to remove bookmark:', error);
+    }
   };
 
   if (loading) {

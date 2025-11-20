@@ -62,6 +62,52 @@ const toggleLike = async (req, res) => {
       });
     }
 
+    // Create notification for content owner when liked (not unliked)
+    if (result.action === 'liked') {
+      let ownerId = null;
+      let notifType = 'like';
+      let linkPath = '';
+      
+      if (targetType === 'Blog' && target.author.toString() !== userId.toString()) {
+        ownerId = target.author;
+        linkPath = `/blogs/${targetId}`;
+      } else if (targetType === 'Comment' && target.user.toString() !== userId.toString()) {
+        ownerId = target.user;
+        linkPath = `/blogs/${target.blog}#comment-${targetId}`;
+      } else if (targetType === 'Package' && target.createdBy && target.createdBy.toString() !== userId.toString()) {
+        ownerId = target.createdBy;
+        linkPath = `/packages/${targetId}`;
+      }
+      
+      if (ownerId) {
+        try {
+          const Notification = require('../models/Notification');
+          await Notification.create({
+            recipient: ownerId,
+            sender: userId,
+            type: notifType,
+            title: 'New Like',
+            message: `${req.user.name} liked your ${targetType.toLowerCase()}`,
+            link: linkPath,
+            data: {
+              targetType,
+              targetId
+            }
+          });
+          
+          // Emit notification via Socket.IO
+          if (io) {
+            io.to(`user_${ownerId}`).emit('notification', {
+              type: 'like',
+              message: `${req.user.name} liked your ${targetType.toLowerCase()}`
+            });
+          }
+        } catch (error) {
+          console.error('Error creating like notification:', error);
+        }
+      }
+    }
+
     res.json({
       ...result,
       likeCount,

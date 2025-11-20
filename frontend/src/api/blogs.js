@@ -115,23 +115,42 @@ export const searchBlogs = async (query, filters = {}) => {
   }
 };
 
-// Like/Unlike blog
+// Like/Unlike blog (Real-time)
 export const toggleBlogLike = async (blogId) => {
   try {
-    const response = await API.post('/likes/toggle', {
-      targetType: 'Blog',
-      targetId: blogId
-    });
+    const response = await API.post(`/blogs/${blogId}/like`);
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: error.message };
   }
 };
 
-// Get like status for blog
-export const getBlogLikeStatus = async (blogId) => {
+// Bookmark/Unbookmark blog (Real-time)
+export const toggleBlogBookmark = async (blogId) => {
   try {
-    const response = await API.get(`/likes/status/Blog/${blogId}`);
+    const response = await API.post(`/blogs/${blogId}/bookmark`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: error.message };
+  }
+};
+
+// Get blog with engagement status
+export const getBlogWithEngagement = async (blogId) => {
+  try {
+    const response = await API.get(`/blogs/${blogId}/engagement`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: error.message };
+  }
+};
+
+// Get bookmarked blogs
+export const getBookmarkedBlogs = async (page = 1, limit = 10) => {
+  try {
+    const response = await API.get('/blogs/bookmarked', { 
+      params: { page, limit } 
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: error.message };

@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Follow = require('../models/Follow');
+const OnboardingService = require('../services/onboardingService');
 
 // Get all users (Admin only)
 exports.getAllUsers = async (req, res) => {
@@ -77,6 +78,15 @@ exports.updateUser = async (req, res) => {
     if (typeof isActive === 'boolean') user.isActive = isActive;
 
     await user.save();
+
+    // Mark onboarding step when profile fields are updated
+    try {
+      if (req.user && req.user.id) {
+        await OnboardingService.markStepCompleted(req.user.id, 'complete_profile');
+      }
+    } catch (err) {
+      console.error('Onboarding complete_profile hook error:', err.message);
+    }
 
     const updatedUser = await User.findById(req.params.id).select('-password');
     res.json(updatedUser);

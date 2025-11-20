@@ -55,6 +55,7 @@ import {
 } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
+import { getMobileSettings, updateMobileSettings, getOfflineContent, getMobileMetrics, clearMobileCache } from '../api/mobile';
 
 const MobilePage = () => {
   const [mobileSettings, setMobileSettings] = useState({
@@ -84,35 +85,39 @@ const MobilePage = () => {
 
   const fetchMobileSettings = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/mobile/settings`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await getMobileSettings();
+      setMobileSettings({
+        offlineMode: response.settings?.offlineMode || false,
+        pushNotifications: response.settings?.pushNotifications !== false,
+        locationServices: response.settings?.locationServices !== false,
+        autoSync: response.settings?.autoSync !== false,
+        dataCompression: response.settings?.dataCompression !== false,
+        darkMode: response.settings?.darkMode || false
       });
-      setMobileSettings({ ...mobileSettings, ...response.data.settings });
     } catch (error) {
       console.error('Error fetching mobile settings:', error);
+      // Keep default settings
     }
   };
 
   const fetchOfflineContent = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/mobile/offline-content`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setOfflineContent(response.data.content || []);
+      const response = await getOfflineContent();
+      setOfflineContent(response.content || []);
     } catch (error) {
       console.error('Error fetching offline content:', error);
-      // Demo data
-      setOfflineContent([
-        { id: 1, title: 'Tokyo Travel Guide', type: 'blog', size: '2.5 MB', lastSync: '2024-01-15' },
-        { id: 2, title: 'Paris Photo Gallery', type: 'photos', size: '15.8 MB', lastSync: '2024-01-14' },
-        { id: 3, title: 'Italy Food Map', type: 'map', size: '5.2 MB', lastSync: '2024-01-13' },
-      ]);
+      setOfflineContent([]);
     }
   };
 
-  const calculateCacheSize = () => {
-    // Simulate cache calculation
-    setCacheSize(23.5); // MB
+  const calculateCacheSize = async () => {
+    try {
+      const response = await getMobileMetrics();
+      setCacheSize(response.cacheSize || 0);
+    } catch (error) {
+      console.error('Error calculating cache size:', error);
+      setCacheSize(0);
+    }
   };
 
   const handleSettingChange = async (setting, value) => {

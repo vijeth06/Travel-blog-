@@ -6,6 +6,7 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 
+// Register with OTP verification
 exports.register = async (req, res) => {
   const { name, email, password, phone, country, city } = req.body;
   try {

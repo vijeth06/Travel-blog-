@@ -67,11 +67,15 @@ const SimpleDashboard = () => {
           const totalViews = blogData.reduce((sum, blog) => sum + (blog.views || 0), 0);
           const totalLikes = blogData.reduce((sum, blog) => sum + (blog.likesCount || 0), 0);
           
+          // Get real follower count from user profile
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          const followersCount = user.followers?.length || 0;
+          
           setStats({
             totalBlogs: blogData.length,
             totalViews,
             totalLikes,
-            followers: Math.floor(Math.random() * 100) + 50
+            followers: followersCount
           });
         }
       })

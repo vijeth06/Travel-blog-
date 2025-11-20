@@ -1,1 +1,456 @@
-import React, { useState, useEffect } from 'react';\nimport {\n  Container,\n  Grid,\n  Paper,\n  Box,\n  Typography,\n  Card,\n  CardContent,\n  CardHeader,\n  Avatar,\n  List,\n  ListItem,\n  ListItemAvatar,\n  ListItemText,\n  Skeleton,\n  Button,\n  Divider,\n  Chip,\n  CircularProgress\n} from '@mui/material';\nimport {\n  TrendingUp,\n  PersonAdd,\n  LocationOn,\n  AccessTime\n} from '@mui/icons-material';\nimport { useSelector } from 'react-redux';\nimport { useNavigate } from 'react-router-dom';\nimport BlogCard from '../components/BlogCard';\nimport FollowButton from '../features/social/FollowButton';\nimport { getSocialFeed, getRecommendedUsers } from '../api/social';\nimport { formatDistanceToNow } from 'date-fns';\n\nconst SocialFeedPage = () => {\n  const [feedBlogs, setFeedBlogs] = useState([]);\n  const [recommendedUsers, setRecommendedUsers] = useState([]);\n  const [loading, setLoading] = useState(true);\n  const [feedLoading, setFeedLoading] = useState(false);\n  const [page, setPage] = useState(1);\n  const [hasMore, setHasMore] = useState(true);\n  \n  const { user, isAuthenticated } = useSelector((state) => state.auth);\n  const navigate = useNavigate();\n\n  useEffect(() => {\n    if (!isAuthenticated) {\n      navigate('/login');\n      return;\n    }\n\n    loadInitialData();\n  }, [isAuthenticated, navigate]);\n\n  const loadInitialData = async () => {\n    try {\n      setLoading(true);\n      await Promise.all([\n        loadSocialFeed(1, true),\n        loadRecommendedUsers()\n      ]);\n    } catch (error) {\n      console.error('Error loading initial data:', error);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const loadSocialFeed = async (pageNum = 1, reset = false) => {\n    try {\n      setFeedLoading(true);\n      const response = await getSocialFeed(pageNum, 10);\n      \n      if (reset) {\n        setFeedBlogs(response.blogs);\n      } else {\n        setFeedBlogs(prev => [...prev, ...response.blogs]);\n      }\n      \n      setHasMore(pageNum < response.pages);\n      setPage(pageNum);\n    } catch (error) {\n      console.error('Error loading social feed:', error);\n    } finally {\n      setFeedLoading(false);\n    }\n  };\n\n  const loadRecommendedUsers = async () => {\n    try {\n      const response = await getRecommendedUsers(5);\n      setRecommendedUsers(response.users);\n    } catch (error) {\n      console.error('Error loading recommended users:', error);\n    }\n  };\n\n  const handleLoadMore = () => {\n    if (!feedLoading && hasMore) {\n      loadSocialFeed(page + 1, false);\n    }\n  };\n\n  const handleFollowChange = () => {\n    // Refresh recommended users after following/unfollowing\n    loadRecommendedUsers();\n  };\n\n  if (loading) {\n    return (\n      <Container maxWidth=\"lg\" sx={{ py: 4 }}>\n        <Grid container spacing={3}>\n          <Grid item xs={12} md={8}>\n            {[...Array(3)].map((_, index) => (\n              <Card key={index} sx={{ mb: 3 }}>\n                <CardHeader\n                  avatar={<Skeleton variant=\"circular\" width={40} height={40} />}\n                  title={<Skeleton variant=\"text\" width=\"40%\" />}\n                  subheader={<Skeleton variant=\"text\" width=\"20%\" />}\n                />\n                <Skeleton variant=\"rectangular\" height={200} />\n                <CardContent>\n                  <Skeleton variant=\"text\" width=\"80%\" />\n                  <Skeleton variant=\"text\" width=\"60%\" />\n                </CardContent>\n              </Card>\n            ))}\n          </Grid>\n          <Grid item xs={12} md={4}>\n            <Paper sx={{ p: 2 }}>\n              <Skeleton variant=\"text\" width=\"60%\" height={30} />\n              {[...Array(3)].map((_, index) => (\n                <Box key={index} sx={{ display: 'flex', alignItems: 'center', my: 2 }}>\n                  <Skeleton variant=\"circular\" width={40} height={40} sx={{ mr: 2 }} />\n                  <Box sx={{ flex: 1 }}>\n                    <Skeleton variant=\"text\" width=\"70%\" />\n                    <Skeleton variant=\"text\" width=\"50%\" />\n                  </Box>\n                </Box>\n              ))}\n            </Paper>\n          </Grid>\n        </Grid>\n      </Container>\n    );\n  }\n\n  return (\n    <Container maxWidth=\"lg\" sx={{ py: 4 }}>\n      <Grid container spacing={3}>\n        {/* Main Feed */}\n        <Grid item xs={12} md={8}>\n          <Box sx={{ mb: 3 }}>\n            <Typography variant=\"h4\" gutterBottom>\n              Your Social Feed\n            </Typography>\n            <Typography variant=\"body1\" color=\"text.secondary\">\n              Stay updated with travel stories from people you follow\n            </Typography>\n          </Box>\n\n          {feedBlogs.length === 0 && !feedLoading ? (\n            <Paper sx={{ p: 4, textAlign: 'center' }}>\n              <Typography variant=\"h6\" gutterBottom>\n                Your feed is empty\n              </Typography>\n              <Typography variant=\"body1\" color=\"text.secondary\" sx={{ mb: 3 }}>\n                Start following other travelers to see their stories here, or explore all blogs to find interesting content.\n              </Typography>\n              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>\n                <Button \n                  variant=\"contained\" \n                  onClick={() => navigate('/blogs')}\n                >\n                  Explore All Blogs\n                </Button>\n                <Button \n                  variant=\"outlined\" \n                  onClick={() => navigate('/blogs/new')}\n                >\n                  Write Your First Story\n                </Button>\n              </Box>\n            </Paper>\n          ) : (\n            <>\n              <Grid container spacing={3}>\n                {feedBlogs.map((blog) => (\n                  <Grid item xs={12} key={blog._id}>\n                    <BlogCard \n                      blog={blog} \n                      showAuthor={true}\n                    />\n                  </Grid>\n                ))}\n              </Grid>\n\n              {hasMore && (\n                <Box sx={{ textAlign: 'center', mt: 4 }}>\n                  <Button \n                    onClick={handleLoadMore}\n                    disabled={feedLoading}\n                    variant=\"outlined\"\n                    size=\"large\"\n                  >\n                    {feedLoading ? (\n                      <>\n                        <CircularProgress size={20} sx={{ mr: 1 }} />\n                        Loading...\n                      </>\n                    ) : (\n                      'Load More Stories'\n                    )}\n                  </Button>\n                </Box>\n              )}\n            </>\n          )}\n        </Grid>\n\n        {/* Sidebar */}\n        <Grid item xs={12} md={4}>\n          {/* Recommended Users */}\n          <Paper sx={{ p: 3, mb: 3 }}>\n            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>\n              <PersonAdd sx={{ mr: 1, color: 'primary.main' }} />\n              <Typography variant=\"h6\">\n                Discover Travelers\n              </Typography>\n            </Box>\n            \n            {recommendedUsers.length === 0 ? (\n              <Typography variant=\"body2\" color=\"text.secondary\">\n                No recommendations available\n              </Typography>\n            ) : (\n              <List sx={{ p: 0 }}>\n                {recommendedUsers.map((user, index) => (\n                  <React.Fragment key={user._id}>\n                    <ListItem \n                      sx={{ \n                        px: 0,\n                        cursor: 'pointer',\n                        '&:hover': { bgcolor: 'action.hover' },\n                        borderRadius: 1\n                      }}\n                      onClick={() => navigate(`/users/${user._id}`)}\n                    >\n                      <ListItemAvatar>\n                        <Avatar \n                          src={user.profilePicture}\n                          sx={{ width: 40, height: 40 }}\n                        >\n                          {user.username?.charAt(0)?.toUpperCase()}\n                        </Avatar>\n                      </ListItemAvatar>\n                      <ListItemText\n                        primary={\n                          <Typography variant=\"body2\" fontWeight={600}>\n                            {user.username}\n                          </Typography>\n                        }\n                        secondary={\n                          <Box>\n                            {user.bio && (\n                              <Typography variant=\"caption\" color=\"text.secondary\">\n                                {user.bio.length > 50 ? `${user.bio.substring(0, 50)}...` : user.bio}\n                              </Typography>\n                            )}\n                            <Typography variant=\"caption\" color=\"text.secondary\" sx={{ display: 'block' }}>\n                              {user.followerCount} followers\n                            </Typography>\n                          </Box>\n                        }\n                      />\n                      <FollowButton\n                        userId={user._id}\n                        userName={user.username}\n                        size=\"small\"\n                        variant=\"chip\"\n                        onFollowChange={handleFollowChange}\n                      />\n                    </ListItem>\n                    {index < recommendedUsers.length - 1 && <Divider />}\n                  </React.Fragment>\n                ))}\n              </List>\n            )}\n          </Paper>\n\n          {/* Trending Topics */}\n          <Paper sx={{ p: 3, mb: 3 }}>\n            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>\n              <TrendingUp sx={{ mr: 1, color: 'primary.main' }} />\n              <Typography variant=\"h6\">\n                Trending Topics\n              </Typography>\n            </Box>\n            \n            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>\n              {[\n                'Beach Destinations',\n                'Mountain Hiking',\n                'City Breaks',\n                'Food Travel',\n                'Adventure Sports',\n                'Cultural Tours'\n              ].map((topic) => (\n                <Chip\n                  key={topic}\n                  label={topic}\n                  size=\"small\"\n                  variant=\"outlined\"\n                  clickable\n                  onClick={() => navigate(`/search?q=${encodeURIComponent(topic)}`)}\n                  sx={{\n                    '&:hover': {\n                      bgcolor: 'primary.main',\n                      color: 'white'\n                    }\n                  }}\n                />\n              ))}\n            </Box>\n          </Paper>\n\n          {/* Quick Actions */}\n          <Paper sx={{ p: 3 }}>\n            <Typography variant=\"h6\" gutterBottom>\n              Quick Actions\n            </Typography>\n            \n            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>\n              <Button\n                variant=\"outlined\"\n                fullWidth\n                onClick={() => navigate('/blogs/new')}\n                sx={{ justifyContent: 'flex-start' }}\n              >\n                ✍️ Write a Travel Story\n              </Button>\n              <Button\n                variant=\"outlined\"\n                fullWidth\n                onClick={() => navigate('/packages')}\n                sx={{ justifyContent: 'flex-start' }}\n              >\n                🏝️ Browse Travel Packages\n              </Button>\n              <Button\n                variant=\"outlined\"\n                fullWidth\n                onClick={() => navigate('/map')}\n                sx={{ justifyContent: 'flex-start' }}\n              >\n                🗺️ Explore Map\n              </Button>\n              <Button\n                variant=\"outlined\"\n                fullWidth\n                onClick={() => navigate('/gamification')}\n                sx={{ justifyContent: 'flex-start' }}\n              >\n                🏆 View Achievements\n              </Button>\n            </Box>\n          </Paper>\n        </Grid>\n      </Grid>\n    </Container>\n  );\n};\n\nexport default SocialFeedPage;
+import React, { useState, useEffect } from 'react';
+import {
+  Container,
+  Grid,
+  Paper,
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CardHeader,
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Skeleton,
+  Button,
+  Divider,
+  Chip,
+  CircularProgress,
+  Snackbar,
+  Alert
+} from '@mui/material';
+import {
+  TrendingUp,
+  PersonAdd,
+  LocationOn,
+  AccessTime
+} from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
+import BlogCard from '../components/BlogCard';
+import FollowButton from '../features/social/FollowButton';
+import { getSocialFeed, getRecommendedUsers } from '../api/social';
+
+const SocialFeedPage = () => {
+  const [feedBlogs, setFeedBlogs] = useState([]);
+  const [recommendedUsers, setRecommendedUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [feedLoading, setFeedLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [socket, setSocket] = useState(null);
+  const [newPostAlert, setNewPostAlert] = useState(null);
+
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  // Initialize WebSocket connection
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+
+    const socketInstance = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
+      transports: ['websocket'],
+      reconnection: true
+    });
+
+    socketInstance.on('connect', () => {
+      console.log('✅ WebSocket connected:', socketInstance.id);
+      // Join user's personal room for notifications
+      if (user && (user.id || user._id)) {
+        socketInstance.emit('join-user-room', user.id || user._id);
+      }
+    });
+
+    socketInstance.on('disconnect', () => {
+      console.log('❌ WebSocket disconnected');
+    });
+
+    // Listen for new blog posts from followed users
+    socketInstance.on('new-blog-post', (data) => {
+      console.log('📝 New blog post received:', data);
+      setNewPostAlert(data);
+      // Add to feed if from followed user
+      if (data.blog) {
+        setFeedBlogs(prev => [data.blog, ...prev]);
+      }
+    });
+
+    // Listen for blog updates (likes, comments)
+    socketInstance.on('blog-updated', (data) => {
+      console.log('🔄 Blog updated:', data);
+      updateBlogInFeed(data.blogId, data.updates);
+    });
+
+    setSocket(socketInstance);
+
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    loadInitialData();
+  }, [isAuthenticated, navigate]);
+
+  const loadInitialData = async () => {
+    try {
+      setLoading(true);
+      await Promise.all([
+        loadSocialFeed(1, true),
+        loadRecommendedUsers()
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadSocialFeed = async (pageNum = 1, reset = false) => {
+    try {
+      setFeedLoading(true);
+      const response = await getSocialFeed(pageNum, 10);
+      const blogs = response.blogs || response.data?.blogs || [];
+
+      if (reset) {
+        setFeedBlogs(blogs);
+      } else {
+        setFeedBlogs(prev => [...prev, ...blogs]);
+      }
+
+      const pages = response.pages || response.data?.pages || 1;
+      setHasMore(pageNum < pages);
+      setPage(pageNum);
+    } finally {
+      setFeedLoading(false);
+    }
+  };
+
+  const loadRecommendedUsers = async () => {
+    try {
+      const response = await getRecommendedUsers(5);
+      setRecommendedUsers(response.users || response.data?.users || []);
+    } catch (error) {
+      console.error('Error loading recommended users:', error);
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (!feedLoading && hasMore) {
+      loadSocialFeed(page + 1, false);
+    }
+  };
+
+  const handleFollowChange = () => {
+    // Refresh recommended users and feed after following/unfollowing
+    loadRecommendedUsers();
+    loadSocialFeed(1, true); // Reload feed to include new followed user's posts
+  };
+
+  const updateBlogInFeed = (blogId, updates) => {
+    setFeedBlogs(prev => prev.map(blog => 
+      blog._id === blogId 
+        ? { ...blog, ...updates, engagement: { ...blog.engagement, ...updates.engagement } }
+        : blog
+    ));
+  };
+
+  const handleCloseAlert = () => {
+    setNewPostAlert(null);
+  };
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={8}>
+            {[...Array(3)].map((_, index) => (
+              <Card key={index} sx={{ mb: 3 }}>
+                <CardHeader
+                  avatar={<Skeleton variant="circular" width={40} height={40} />}
+                  title={<Skeleton variant="text" width="40%" />}
+                  subheader={<Skeleton variant="text" width="20%" />}
+                />
+                <Skeleton variant="rectangular" height={200} />
+                <CardContent>
+                  <Skeleton variant="text" width="80%" />
+                  <Skeleton variant="text" width="60%" />
+                </CardContent>
+              </Card>
+            ))}
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 2 }}>
+              <Skeleton variant="text" width="60%" height={30} />
+              {[...Array(3)].map((_, index) => (
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
+                  <Skeleton variant="circular" width={40} height={40} sx={{ mr: 2 }} />
+                  <Box sx={{ flex: 1 }}>
+                    <Skeleton variant="text" width="70%" />
+                    <Skeleton variant="text" width="50%" />
+                  </Box>
+                </Box>
+              ))}
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+    );
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* New Post Alert */}
+      <Snackbar
+        open={!!newPostAlert}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseAlert} 
+          severity="info" 
+          sx={{ width: '100%' }}
+          action={
+            <Button color="inherit" size="small" onClick={() => {
+              loadSocialFeed(1, true);
+              handleCloseAlert();
+            }}>
+              VIEW
+            </Button>
+          }
+        >
+          {newPostAlert?.author?.name || 'Someone'} posted: "{newPostAlert?.blog?.title || 'New post'}"
+        </Alert>
+      </Snackbar>
+
+      <Grid container spacing={3}>
+        {/* Main Feed */}
+        <Grid item xs={12} md={8}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h4" gutterBottom>
+              Your Social Feed
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Stay updated with travel stories from people you follow
+            </Typography>
+          </Box>
+
+          {feedBlogs.length === 0 && !feedLoading ? (
+            <Paper sx={{ p: 4, textAlign: 'center' }}>
+              <Typography variant="h6" gutterBottom>
+                Your feed is empty
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                Start following other travelers to see their stories here, or explore all blogs to find interesting content.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate('/blogs')}
+                >
+                  Explore All Blogs
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate('/blogs/new')}
+                >
+                  Write Your First Story
+                </Button>
+              </Box>
+            </Paper>
+          ) : (
+            <>
+              <Grid container spacing={3}>
+                {feedBlogs.map((blog) => (
+                  <Grid item xs={12} key={blog._id}>
+                    <BlogCard
+                      blog={blog}
+                      showAuthor
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+
+              {hasMore && (
+                <Box sx={{ textAlign: 'center', mt: 4 }}>
+                  <Button
+                    onClick={handleLoadMore}
+                    disabled={feedLoading}
+                    variant="outlined"
+                    size="large"
+                  >
+                    {feedLoading ? (
+                      <>
+                        <CircularProgress size={20} sx={{ mr: 1 }} />
+                        Loading...
+                      </>
+                    ) : (
+                      'Load More Stories'
+                    )}
+                  </Button>
+                </Box>
+              )}
+            </>
+          )}
+        </Grid>
+
+        {/* Sidebar */}
+        <Grid item xs={12} md={4}>
+          {/* Recommended Users */}
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <PersonAdd sx={{ mr: 1, color: 'primary.main' }} />
+              <Typography variant="h6">
+                Discover Travelers
+              </Typography>
+            </Box>
+
+            {recommendedUsers.length === 0 ? (
+              <Typography variant="body2" color="text.secondary">
+                No recommendations available
+              </Typography>
+            ) : (
+              <List sx={{ p: 0 }}>
+                {recommendedUsers.map((user, index) => (
+                  <React.Fragment key={user._id}>
+                    <ListItem
+                      sx={{
+                        px: 0,
+                        cursor: 'pointer',
+                        '&:hover': { bgcolor: 'action.hover' },
+                        borderRadius: 1
+                      }}
+                      onClick={() => navigate(`/users/${user._id}`)}
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          src={user.avatar}
+                          sx={{ width: 40, height: 40 }}
+                        >
+                          {user.name?.charAt(0)?.toUpperCase()}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={
+                          <Typography variant="body2" fontWeight={600}>
+                            {user.name}
+                          </Typography>
+                        }
+                        secondary={
+                          <Box>
+                            {user.bio && (
+                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                {user.bio.length > 50 ? `${user.bio.substring(0, 50)}...` : user.bio}
+                              </Typography>
+                            )}
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                              {user.followerCount || 0} followers • {user.postCount || 0} posts
+                            </Typography>
+                          </Box>
+                        }
+                      />
+                      <FollowButton
+                        userId={user._id}
+                        userName={user.name}
+                        size="small"
+                        variant="chip"
+                        onFollowChange={handleFollowChange}
+                      />
+                    </ListItem>
+                    {index < recommendedUsers.length - 1 && <Divider />}
+                  </React.Fragment>
+                ))}
+              </List>
+            )}
+          </Paper>
+
+          {/* Trending Topics */}
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <TrendingUp sx={{ mr: 1, color: 'primary.main' }} />
+              <Typography variant="h6">
+                Trending Topics
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {[
+                'Beach Destinations',
+                'Mountain Hiking',
+                'City Breaks',
+                'Food Travel',
+                'Adventure Sports',
+                'Cultural Tours'
+              ].map((topic) => (
+                <Chip
+                  key={topic}
+                  label={topic}
+                  size="small"
+                  variant="outlined"
+                  clickable
+                  onClick={() => navigate(`/search?q=${encodeURIComponent(topic)}`)}
+                  sx={{
+                    '&:hover': {
+                      bgcolor: 'primary.main',
+                      color: 'white'
+                    }
+                  }}
+                />
+              ))}
+            </Box>
+          </Paper>
+
+          {/* Quick Actions */}
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Quick Actions
+            </Typography>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={() => navigate('/blogs/new')}
+                sx={{ justifyContent: 'flex-start' }}
+              >
+                ✍️ Write a Travel Story
+              </Button>
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={() => navigate('/packages')}
+                sx={{ justifyContent: 'flex-start' }}
+              >
+                🏝️ Browse Travel Packages
+              </Button>
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={() => navigate('/map')}
+                sx={{ justifyContent: 'flex-start' }}
+              >
+                🗺️ Explore Map
+              </Button>
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={() => navigate('/gamification')}
+                sx={{ justifyContent: 'flex-start' }}
+              >
+                🏆 View Achievements
+              </Button>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
+  );
+};
+
+export default SocialFeedPage;

@@ -37,7 +37,8 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
-import { getUserById, followUser, unfollowUser } from '../api/users';
+import { getUserById } from '../api/users';
+import FollowButton from '../features/social/FollowButton';
 import { getBlogs } from '../api/blogs';
 
 const ProfilePage = () => {
@@ -49,8 +50,6 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentTab, setCurrentTab] = useState(0);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -63,11 +62,6 @@ const ProfilePage = () => {
         
         setUser(userResponse.data || userResponse);
         setUserBlogs(blogsResponse.data?.blogs || blogsResponse.blogs || []);
-        
-        // Check if current user is following this user
-        if (currentUser && userResponse.data?.followers) {
-          setIsFollowing(userResponse.data.followers.includes(currentUser.id));
-        }
       } catch (error) {
         console.error('Error fetching user data:', error);
         setError('Failed to load user profile');
@@ -80,37 +74,6 @@ const ProfilePage = () => {
       fetchUserData();
     }
   }, [id, currentUser]);
-
-  const handleFollow = async () => {
-    if (!currentUser) {
-      navigate('/login');
-      return;
-    }
-
-    try {
-      setFollowLoading(true);
-      if (isFollowing) {
-        await unfollowUser(id);
-        setIsFollowing(false);
-        setUser(prev => ({
-          ...prev,
-          followers: prev.followers.filter(f => f !== currentUser.id)
-        }));
-      } else {
-        await followUser(id);
-        setIsFollowing(true);
-        setUser(prev => ({
-          ...prev,
-          followers: [...(prev.followers || []), currentUser.id]
-        }));
-      }
-    } catch (error) {
-      console.error('Error following/unfollowing user:', error);
-      setError('Failed to update follow status');
-    } finally {
-      setFollowLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -200,7 +163,7 @@ const ProfilePage = () => {
                 </Box>
                 <Box sx={{ textAlign: 'center' }}>
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {user.followers?.length || 0}
+                    {user.followerCount || user.followers?.length || 0}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Followers
@@ -208,7 +171,7 @@ const ProfilePage = () => {
                 </Box>
                 <Box sx={{ textAlign: 'center' }}>
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {user.following?.length || 0}
+                    {user.followingCount || user.following?.length || 0}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Following
@@ -232,17 +195,12 @@ const ProfilePage = () => {
                     Edit Profile
                   </Button>
                 ) : (
-                  <Button
-                    variant={isFollowing ? "outlined" : "contained"}
-                    startIcon={isFollowing ? <PersonRemove /> : <PersonAdd />}
-                    onClick={handleFollow}
-                    disabled={followLoading}
-                    sx={{
-                      background: !isFollowing ? 'linear-gradient(45deg, #FF6B35 30%, #F7931E 90%)' : undefined
-                    }}
-                  >
-                    {followLoading ? <CircularProgress size={20} /> : (isFollowing ? 'Unfollow' : 'Follow')}
-                  </Button>
+                  <FollowButton
+                    userId={user._id}
+                    userName={user.name}
+                    showFollowerCount
+                    size="medium"
+                  />
                 )}
               </Box>
             </Grid>

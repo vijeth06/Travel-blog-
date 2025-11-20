@@ -64,10 +64,45 @@ const UserSchema = new mongoose.Schema({
   totalLikes: { type: Number, default: 0 },
   totalViews: { type: Number, default: 0 },
 
+   // Onboarding checklist
+  onboarding: {
+    isCompleted: { type: Boolean, default: false },
+    steps: [{
+      key: { type: String }, // e.g., 'complete_profile', 'follow_first_author'
+      completedAt: { type: Date }
+    }],
+    startedAt: { type: Date, default: Date.now },
+    completedAt: { type: Date }
+  },
+
   // Account status
   isVerified: { type: Boolean, default: false },
   isActive: { type: Boolean, default: true },
   lastLogin: { type: Date },
+
+  // Two-Factor Authentication
+  twoFactorAuth: {
+    enabled: { type: Boolean, default: false },
+    secret: String, // TOTP secret
+    backupCodes: [String], // One-time backup codes
+    method: { type: String, enum: ['email', 'sms', 'authenticator'], default: 'email' }
+  },
+
+  // Security settings
+  security: {
+    accountLocked: { type: Boolean, default: false },
+    lockUntil: Date,
+    failedLoginAttempts: { type: Number, default: 0 },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    trustedDevices: [{
+      deviceId: String,
+      deviceName: String,
+      addedAt: { type: Date, default: Date.now },
+      lastUsed: Date
+    }]
+  },
 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
@@ -85,5 +120,18 @@ UserSchema.methods.matchPassword = function (enteredPassword) {
   if (!this.password) return false; // Google OAuth users don't have passwords
   return bcrypt.compare(enteredPassword, this.password);
 };
+
+// Virtual fields for real-time counts
+UserSchema.virtual('followerCount').get(function() {
+  return this.followers ? this.followers.length : 0;
+});
+
+UserSchema.virtual('followingCount').get(function() {
+  return this.following ? this.following.length : 0;
+});
+
+// Ensure virtuals are included in JSON
+UserSchema.set('toJSON', { virtuals: true });
+UserSchema.set('toObject', { virtuals: true });
 
 module.exports = mongoose.model('User', UserSchema);

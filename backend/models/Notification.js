@@ -13,7 +13,22 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['comment', 'like', 'follow', 'booking', 'save', 'system'],
+    enum: [
+      'comment', 
+      'like', 
+      'follow', 
+      'booking', 
+      'save', 
+      'system',
+      'message',        // New chat message
+      'reply',          // Reply to comment
+      'mention',        // User mentioned in comment/post
+      'review',         // New review on user's content
+      'achievement',    // Achievement unlocked
+      'story_view',     // Someone viewed your story
+      'gallery_like',   // Gallery photo liked
+      'itinerary_share' // Someone shared itinerary
+    ],
     required: true
   },
   title: {

@@ -51,6 +51,7 @@ import {
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { getUserIntegrations, connectIntegration, disconnectIntegration, updateIntegrationSettings, syncIntegration } from '../api/integrations';
 
 const IntegrationsPage = () => {
   const [integrations, setIntegrations] = useState([]);
@@ -66,128 +67,14 @@ const IntegrationsPage = () => {
   }, [token]);
 
   const fetchIntegrations = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/integrations`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setIntegrations(response.data.integrations || []);
+      const response = await getUserIntegrations();
+      setIntegrations(response.integrations || []);
     } catch (error) {
       console.error('Error fetching integrations:', error);
-      // Demo data
-      setIntegrations([
-        {
-          id: 'facebook',
-          name: 'Facebook',
-          description: 'Share your blog posts automatically to Facebook',
-          category: 'Social Media',
-          icon: 'Facebook',
-          enabled: true,
-          connected: true,
-          status: 'active',
-          lastSync: '2024-01-15T10:30:00Z',
-          settings: {
-            autoPost: true,
-            includeImages: true,
-            postTiming: 'immediate',
-          },
-        },
-        {
-          id: 'instagram',
-          name: 'Instagram',
-          description: 'Cross-post your travel photos to Instagram',
-          category: 'Social Media',
-          icon: 'Instagram',
-          enabled: false,
-          connected: false,
-          status: 'disconnected',
-          lastSync: null,
-          settings: {},
-        },
-        {
-          id: 'google-calendar',
-          name: 'Google Calendar',
-          description: 'Sync travel dates and itineraries',
-          category: 'Productivity',
-          icon: 'CalendarToday',
-          enabled: true,
-          connected: true,
-          status: 'active',
-          lastSync: '2024-01-15T08:15:00Z',
-          settings: {
-            syncTripDates: true,
-            createReminders: true,
-          },
-        },
-        {
-          id: 'weather-api',
-          name: 'Weather Service',
-          description: 'Automatic weather information for your travel locations',
-          category: 'Travel',
-          icon: 'WbSunny',
-          enabled: true,
-          connected: true,
-          status: 'active',
-          lastSync: '2024-01-15T12:00:00Z',
-          settings: {
-            includeInPosts: true,
-            forecastDays: 7,
-          },
-        },
-        {
-          id: 'google-maps',
-          name: 'Google Maps',
-          description: 'Embed maps and location data in your posts',
-          category: 'Travel',
-          icon: 'Map',
-          enabled: true,
-          connected: true,
-          status: 'active',
-          lastSync: '2024-01-15T11:45:00Z',
-          settings: {
-            autoEmbed: true,
-            showDirections: true,
-          },
-        },
-        {
-          id: 'booking-com',
-          name: 'Booking.com',
-          description: 'Affiliate integration for hotel recommendations',
-          category: 'Monetization',
-          icon: 'Hotel',
-          enabled: false,
-          connected: false,
-          status: 'available',
-          lastSync: null,
-          settings: {},
-        },
-        {
-          id: 'currency-api',
-          name: 'Currency Exchange',
-          description: 'Real-time currency conversion for travel expenses',
-          category: 'Travel',
-          icon: 'CurrencyExchange',
-          enabled: true,
-          connected: true,
-          status: 'active',
-          lastSync: '2024-01-15T13:20:00Z',
-          settings: {
-            baseCurrency: 'USD',
-            autoUpdate: true,
-          },
-        },
-        {
-          id: 'translate-api',
-          name: 'Google Translate',
-          description: 'Automatic translation for international readers',
-          category: 'Accessibility',
-          icon: 'Language',
-          enabled: false,
-          connected: false,
-          status: 'available',
-          lastSync: null,
-          settings: {},
-        },
-      ]);
+      // Set empty array instead of demo data
+      setIntegrations([]);
     } finally {
       setLoading(false);
     }

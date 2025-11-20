@@ -1,6 +1,7 @@
 const FavoritePlace = require('../models/FavoritePlace');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
+const OnboardingService = require('../services/onboardingService');
 
 // Get most popular places by continent
 exports.getMostPopularByContinent = async (req, res) => {
@@ -297,6 +298,15 @@ exports.createFavoritePlace = async (req, res) => {
 
     const place = new FavoritePlace(placeData);
     await place.save();
+
+    // Mark onboarding step when user saves their first favorite place
+    try {
+      if (placeData.user) {
+        await OnboardingService.markStepCompleted(placeData.user, 'save_first_place');
+      }
+    } catch (err) {
+      console.error('Onboarding save_first_place hook error:', err.message);
+    }
 
     // Populate the created place
     const populatedPlace = await FavoritePlace.findById(place._id)

@@ -58,14 +58,11 @@ const MapPage = () => {
         const response = await getBlogs();
         const blogData = response.data?.blogs || response.blogs || [];
         
-        // Add mock geotag data for demonstration
-        const blogsWithGeodata = blogData.map((blog, index) => ({
+        // Use real geotag data from blogs
+        const blogsWithGeodata = blogData.map(blog => ({
           ...blog,
-          geotag: {
-            lat: 40.7128 + (index * 0.5),
-            lng: -74.0060 + (index * 0.3)
-          }
-        }));
+          geotag: blog.geotag || blog.location?.coordinates || null
+        })).filter(blog => blog.geotag); // Only show blogs with geotag data
         
         setBlogs(blogsWithGeodata);
         setFilteredBlogs(blogsWithGeodata);

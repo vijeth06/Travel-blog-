@@ -240,6 +240,7 @@ const NotificationCenter = () => {
         color="inherit"
         onClick={handleClick}
         sx={{ ml: 1 }}
+        aria-label="Open notifications"
       >
         <Badge badgeContent={unreadCount} color="error">
           {unreadCount > 0 ? <Notifications /> : <NotificationsNone />}

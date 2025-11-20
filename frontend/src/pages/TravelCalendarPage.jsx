@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { getTrips } from '../api/trips';
+import { getBookings } from '../api/bookings';
 import {
   Box,
   Container,
@@ -84,8 +86,7 @@ const TravelCalendar = () => {
       setEvents(response.data);
     } catch (error) {
       console.error('Error fetching events:', error);
-      // Use mock data
-      setEvents(generateMockEvents());
+      setEvents([]);
     } finally {
       setLoading(false);
     }
@@ -93,21 +94,25 @@ const TravelCalendar = () => {
 
   const fetchWeatherData = async () => {
     try {
-      // This would integrate with a weather API
-      setWeatherData(generateMockWeather());
+      // TODO: Integrate with real weather API (OpenWeather, WeatherAPI, etc.)
+      // For now, set empty weather data
+      setWeatherData({});
     } catch (error) {
       console.error('Error fetching weather:', error);
+      setWeatherData({});
     }
   };
 
   const fetchSeasonalRecommendations = async () => {
     try {
-      const month = currentDate.getMonth();
-      const response = await api.get(`/recommendations/seasonal?month=${month}`);
-      setSeasonalRecommendations(response.data);
+      // TODO: Fetch from real AI recommendations API
+      // const month = currentDate.getMonth();
+      // const response = await api.get(`/real-ai-recommendations/seasonal?month=${month}`);
+      // setSeasonalRecommendations(response.data);
+      setSeasonalRecommendations([]);
     } catch (error) {
       console.error('Error fetching recommendations:', error);
-      setSeasonalRecommendations(generateMockRecommendations());
+      setSeasonalRecommendations([]);
     }
   };
 

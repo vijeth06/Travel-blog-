@@ -1,4 +1,5 @@
 const FollowService = require('../services/followService');
+const OnboardingService = require('../services/onboardingService');
 
 class FollowController {
   
@@ -137,6 +138,15 @@ class FollowController {
         }
       }
       
+      // Mark onboarding step when user successfully follows someone
+      try {
+        if (result.data && result.data.following) {
+          await OnboardingService.markStepCompleted(followerId, 'follow_first_author');
+        }
+      } catch (err) {
+        console.error('Onboarding follow_first_author hook error:', err.message);
+      }
+
       res.status(200).json(result);
       
     } catch (error) {

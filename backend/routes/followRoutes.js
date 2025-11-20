@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const followController = require('../controllers/followController');
-const { authenticateUser } = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 
 // Apply authentication middleware to all follow routes
-router.use(authenticateUser);
+router.use(protect);
 
 /**
  * @route   POST /api/follow/user
