@@ -198,7 +198,16 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/itinerary', itineraryRoutes);
 
-app.get('/', (req, res) => res.send('Travel Blog API running'));
+// Serve static files from React build in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => res.send('Travel Blog API running'));
+}
 
 // Error handler middleware (must be last)
 app.use(errorHandler);
