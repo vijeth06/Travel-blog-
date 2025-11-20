@@ -20,34 +20,35 @@ passport.use(new JwtStrategy({
   }
 }));
 
-// Google OAuth Strategy
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || "/api/auth/v2/google/callback"
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-    // Check if user already exists with this Google ID
-    let user = await User.findOne({ 'social.google': profile.id });
-    
-    if (user) {
-      // User exists, update last login
-      user.lastLogin = new Date();
-      await user.save();
-      return done(null, user);
-    }
-
-    // Check if user exists with same email
-    user = await User.findOne({ email: profile.emails[0].value });
-    
-    if (user) {
-      // Link Google account to existing user
-      user.social.google = profile.id;
-      user.lastLogin = new Date();
-      if (!user.avatar && profile.photos[0]) {
-        user.avatar = profile.photos[0].value;
+// Google OAuth Strategy (only if credentials are configured)
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "/api/auth/v2/google/callback"
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Check if user already exists with this Google ID
+      let user = await User.findOne({ 'social.google': profile.id });
+      
+      if (user) {
+        // User exists, update last login
+        user.lastLogin = new Date();
+        await user.save();
+        return done(null, user);
       }
-      await user.save();
+
+      // Check if user exists with same email
+      user = await User.findOne({ email: profile.emails[0].value });
+      
+      if (user) {
+        // Link Google account to existing user
+        user.social.google = profile.id;
+        user.lastLogin = new Date();
+        if (!user.avatar && profile.photos[0]) {
+          user.avatar = profile.photos[0].value;
+        }
+        await user.save();
       return done(null, user);
     }
 
@@ -69,7 +70,10 @@ passport.use(new GoogleStrategy({
   } catch (error) {
     return done(error, null);
   }
-}));
+  }));
+} else {
+  console.log('⚠️  Google OAuth not configured - skipping Google authentication');
+}
 
 // Serialize user for session
 passport.serializeUser((user, done) => {
