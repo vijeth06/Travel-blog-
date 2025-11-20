@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
+import { getApiUrl } from '../config/api';
 
 const GoogleAuthButton = ({ mode = 'signin', fullWidth = true }) => {
   const handleGoogleAuth = () => {
     // Redirect to backend Google OAuth endpoint
-    // Remove /api prefix since backend route already includes it
-    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    const baseUrl = getApiUrl();
     window.location.href = `${baseUrl}/auth/v2/google`;
   };
 
