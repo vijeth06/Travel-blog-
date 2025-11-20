@@ -3,14 +3,16 @@
 // In development, use localhost
 
 export const getApiUrl = () => {
-  if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_API_URL) {
+  // If running on Render or production domain, use relative URL
+  if (window.location.hostname !== 'localhost' && !process.env.REACT_APP_API_URL) {
     return '/api';
   }
   return process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 };
 
 export const getSocketUrl = () => {
-  if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_SOCKET_URL) {
+  // If running on Render or production domain, use same origin
+  if (window.location.hostname !== 'localhost' && !process.env.REACT_APP_SOCKET_URL) {
     return window.location.origin;
   }
   return process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';

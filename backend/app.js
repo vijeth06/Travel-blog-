@@ -204,9 +204,24 @@ app.use('/api/itinerary', itineraryRoutes);
 
 // Serve static files from React build in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  // Cache static assets but not HTML
+  app.use('/static', express.static(path.join(__dirname, '../frontend/build/static'), {
+    maxAge: '1y',
+    immutable: true
+  }));
+  
+  // Serve other static files without long cache
+  app.use(express.static(path.join(__dirname, '../frontend/build'), {
+    maxAge: 0,
+    setHeaders: (res, filepath) => {
+      if (filepath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
+    }
+  }));
   
   app.get('*', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
   });
 } else {
