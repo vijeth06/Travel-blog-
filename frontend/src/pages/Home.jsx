@@ -14,8 +14,7 @@ import {
   Stack,
   Divider,
   CardActions,
-  IconButton,
-  Carousel
+  IconButton
 } from '@mui/material';
 import {
   FlightTakeoff,
