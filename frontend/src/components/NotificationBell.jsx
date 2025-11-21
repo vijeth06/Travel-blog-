@@ -29,6 +29,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import { getSocketUrl } from '../config/api';
 import {
   getNotifications,
   markNotificationRead,

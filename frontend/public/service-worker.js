@@ -76,6 +76,11 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Skip cross-origin requests (external APIs, fonts, etc.)
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
   // Different strategies for different resource types
   if (CACHE_PATTERNS.API.test(url.pathname)) {
     // API requests: Network first, cache fallback
