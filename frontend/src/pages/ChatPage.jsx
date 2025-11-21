@@ -34,6 +34,7 @@ import {
   Close as CloseIcon
 } from '@mui/icons-material';
 import { io } from 'socket.io-client';
+import { getSocketUrl } from '../config/api';
 import {
   getConversations,
   getMessages,

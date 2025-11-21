@@ -30,6 +30,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import { getSocketUrl } from '../config/api';
 import BlogCard from '../components/BlogCard';
 import FollowButton from '../features/social/FollowButton';
 import { getSocialFeed, getRecommendedUsers } from '../api/social';

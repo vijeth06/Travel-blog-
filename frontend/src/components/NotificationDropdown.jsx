@@ -26,6 +26,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
+import { getSocketUrl } from '../config/api';
 import { formatDistanceToNow } from 'date-fns';
 import {
   getNotifications,
