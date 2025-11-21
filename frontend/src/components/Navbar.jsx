@@ -380,6 +380,17 @@ export default function Navbar() {
               <ListItemIcon><DashboardIcon sx={{ color: 'white' }} /></ListItemIcon>
               <ListItemText primary="Dashboard" />
             </ListItem>
+            {user?.role === 'package_provider' && (
+              <ListItem component={Link} to="/provider/dashboard" onClick={handleDrawerToggle} sx={{ 
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' },
+                borderRadius: 1,
+                mx: 1,
+                mb: 0.5
+              }}>
+                <ListItemIcon><Business sx={{ color: 'white' }} /></ListItemIcon>
+                <ListItemText primary="Provider Dashboard" />
+              </ListItem>
+            )}
             <ListItem component={Link} to="/analytics" onClick={handleDrawerToggle} sx={{ 
               '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' },
               borderRadius: 1,

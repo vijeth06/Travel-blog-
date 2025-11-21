@@ -180,6 +180,12 @@ export default function Register() {
                 Sign in here
               </Link>
             </Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              Want to offer travel packages?{' '}
+              <Link to="/provider/register" style={{ color: '#1976d2', textDecoration: 'none', fontWeight: 'bold' }}>
+                Register as Package Provider
+              </Link>
+            </Typography>
           </Box>
         </form>
       </Paper>

@@ -70,6 +70,8 @@ import InteractiveMapPage from './pages/InteractiveMapPage';
 import BlogPage from './pages/BlogPage';
 import SocialFeed from './pages/SocialFeed';
 import SimpleDashboard from './pages/SimpleDashboard';
+import ProviderRegister from './pages/ProviderRegister';
+import ProviderDashboard from './pages/ProviderDashboard';
 import { AuthProvider } from './contexts/EnhancedAuthContext';
 import './styles/themes.css';
 
@@ -315,6 +317,8 @@ function AppContent() {
               <Route path="/feed" element={<ProtectedRoute><SocialFeedPage /></ProtectedRoute>} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/provider/register" element={<ProviderRegister />} />
+              <Route path="/provider/dashboard" element={<ProtectedRoute><ProviderDashboard /></ProtectedRoute>} />
               <Route path="/auth/callback" element={<GoogleAuthCallback />} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
