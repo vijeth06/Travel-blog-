@@ -114,7 +114,29 @@ export default function BlogDetail() {
         
         if (response.ok) {
           const data = await response.json();
-          setBlog(data.blog || data);
+          const blogData = data.blog || data;
+          
+          // Add default values for missing fields
+          const normalizedBlog = {
+            ...blogData,
+            likes: blogData.likes || [],
+            comments: blogData.comments || [],
+            tags: blogData.tags || [],
+            rating: blogData.rating || 0,
+            readTime: blogData.readingTime ? `${blogData.readingTime} min read` : '5 min read',
+            author: {
+              ...blogData.author,
+              bio: blogData.author?.bio || 'Travel enthusiast and blogger',
+              avatar: blogData.author?.avatar || ''
+            },
+            images: blogData.images?.length > 0 
+              ? blogData.images.map(img => typeof img === 'string' ? img : img.url)
+              : blogData.featuredImage 
+                ? [blogData.featuredImage]
+                : ['https://source.unsplash.com/random/1200x600/?travel']
+          };
+          
+          setBlog(normalizedBlog);
           
           // Check if blog is bookmarked
           try {
@@ -245,7 +267,7 @@ export default function BlogDetail() {
               />
             </Tooltip>
           )}
-          {blog.likes.length > 100 && (
+          {(blog.likesCount || (blog.likes?.length || 0)) > 100 && (
             <Tooltip title="Highly Rated - Loved by the community">
               <Chip 
                 icon={<Verified />} 
@@ -256,7 +278,7 @@ export default function BlogDetail() {
               />
             </Tooltip>
           )}
-          {blog.comments.length > 50 && (
+          {(blog.commentsCount || (blog.comments?.length || 0)) > 50 && (
             <Tooltip title="Active Discussion - Lots of reader engagement">
               <Chip 
                 icon={<Comment />} 
@@ -307,7 +329,7 @@ export default function BlogDetail() {
             backgroundColor: liked ? '#f44336' : 'transparent'
           }}
         >
-          {liked ? 'Liked' : 'Like'} ({blog.likes.length})
+          {liked ? 'Liked' : 'Like'} ({blog.likesCount || (blog.likes?.length || 0)})
         </Button>
         
         <Button
@@ -315,7 +337,7 @@ export default function BlogDetail() {
           startIcon={<Comment />}
           sx={{ borderColor: '#2196f3', color: '#2196f3' }}
         >
-          Comment ({blog.comments.length})
+          Comment ({blog.commentsCount || (blog.comments?.length || 0)})
         </Button>
         
         <Button
@@ -354,28 +376,32 @@ export default function BlogDetail() {
           <Box sx={{ mb: 4 }}>
             <Typography variant="h6" gutterBottom>Tags</Typography>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {blog.tags.map((tag, index) => (
-                <Chip 
-                  key={index} 
-                  label={tag} 
-                  variant="outlined"
-                  sx={{ 
-                    borderColor: '#1E88E5', 
-                    color: '#1E88E5',
-                    borderWidth: '2px',
-                    '&:hover': {
-                      backgroundColor: 'rgba(30, 136, 229, 0.05)',
-                    }
-                  }}
-                />
-              ))}
+              {blog.tags && blog.tags.length > 0 ? (
+                blog.tags.map((tag, index) => (
+                  <Chip 
+                    key={index} 
+                    label={tag} 
+                    variant="outlined"
+                    sx={{ 
+                      borderColor: '#1E88E5', 
+                      color: '#1E88E5',
+                      borderWidth: '2px',
+                      '&:hover': {
+                        backgroundColor: 'rgba(30, 136, 229, 0.05)',
+                      }
+                    }}
+                  />
+                ))
+              ) : (
+                <Typography variant="body2" color="text.secondary">No tags</Typography>
+              )}
             </Box>
           </Box>
 
           {/* Comments */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" gutterBottom>
-              Comments ({blog.comments.length})
+              Comments ({blog.commentsCount || (blog.comments?.length || 0)})
             </Typography>
             
             <Box sx={{ mb: 3 }}>
@@ -401,30 +427,34 @@ export default function BlogDetail() {
               </Button>
             </Box>
 
-            <List>
-              {blog.comments.map((comment) => (
-                <ListItem key={comment._id} sx={{ px: 0 }}>
-                  <ListItemAvatar>
-                    <Avatar src={comment.author.avatar}>
-                      {comment.author.name.charAt(0)}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                          {comment.author.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(comment.createdAt).toLocaleDateString()}
-                        </Typography>
-                      </Box>
-                    }
-                    secondary={comment.content}
-                  />
-                </ListItem>
-              ))}
-            </List>
+            {blog.comments && blog.comments.length > 0 ? (
+              <List>
+                {blog.comments.map((comment) => (
+                  <ListItem key={comment._id} sx={{ px: 0 }}>
+                    <ListItemAvatar>
+                      <Avatar src={comment.author?.avatar}>
+                        {comment.author?.name?.charAt(0) || 'U'}
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                            {comment.author?.name || 'Anonymous'}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(comment.createdAt).toLocaleDateString()}
+                          </Typography>
+                        </Box>
+                      }
+                      secondary={comment.content}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography variant="body2" color="text.secondary">No comments yet. Be the first to comment!</Typography>
+            )}
           </Box>
         </Grid>
 
@@ -469,15 +499,15 @@ export default function BlogDetail() {
               <Typography variant="h6" gutterBottom>Story Stats</Typography>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="body2" color="text.secondary">Views</Typography>
-                <Typography variant="body2">{blog.views.toLocaleString()}</Typography>
+                <Typography variant="body2">{(blog.views || 0).toLocaleString()}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="body2" color="text.secondary">Likes</Typography>
-                <Typography variant="body2">{blog.likes.length}</Typography>
+                <Typography variant="body2">{blog.likesCount || (blog.likes?.length || 0)}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body2" color="text.secondary">Rating</Typography>
-                <Typography variant="body2">{blog.rating}/5</Typography>
+                <Typography variant="body2">{blog.rating || 0}/5</Typography>
               </Box>
             </CardContent>
           </Card>
