@@ -1,7 +1,9 @@
+import { API_URL } from '../config/api';
+
 // Test API connection
 export const testAPIConnection = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/blogs');
+    const response = await fetch(`${API_URL}/blogs`);
     const data = await response.json();
     console.log('API Connection Test:', response.status, data);
     return { success: true, data };
@@ -14,7 +16,7 @@ export const testAPIConnection = async () => {
 // Test backend health
 export const testBackendHealth = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/health');
+    const response = await fetch(`${API_URL}/health`);
     const data = await response.json();
     console.log('Backend Health:', response.status, data);
     return { success: true, data };

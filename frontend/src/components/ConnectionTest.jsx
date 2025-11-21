@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Alert, CircularProgress } from '@mui/material';
+import { API_URL } from '../config/api';
 
 const ConnectionTest = () => {
   const [status, setStatus] = useState('testing');
@@ -14,7 +15,7 @@ const ConnectionTest = () => {
     try {
       // Test 1: Backend Health Check
       console.log('Testing backend health...');
-      const healthResponse = await fetch('http://localhost:5000/api/health');
+      const healthResponse = await fetch(`${API_URL}/health`);
       testResults.health = {
         status: healthResponse.status,
         ok: healthResponse.ok,
@@ -24,7 +25,7 @@ const ConnectionTest = () => {
 
       // Test 2: Blogs API
       console.log('Testing blogs API...');
-      const blogsResponse = await fetch('http://localhost:5000/api/blogs');
+      const blogsResponse = await fetch(`${API_URL}/blogs`);
       testResults.blogs = {
         status: blogsResponse.status,
         ok: blogsResponse.ok,
@@ -34,7 +35,7 @@ const ConnectionTest = () => {
 
       // Test 3: Auth API (should return 401)
       console.log('Testing auth API...');
-      const authResponse = await fetch('http://localhost:5000/api/auth/profile');
+      const authResponse = await fetch(`${API_URL}/auth/profile`);
       testResults.auth = {
         status: authResponse.status,
         ok: authResponse.ok,
@@ -50,7 +51,7 @@ const ConnectionTest = () => {
         password: 'password123'
       };
       
-      const registerResponse = await fetch('http://localhost:5000/api/auth/register', {
+      const registerResponse = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

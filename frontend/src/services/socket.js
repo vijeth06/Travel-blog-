@@ -13,7 +13,7 @@ class SocketService {
 
     // In production, connect to same domain; in development use localhost
     const getSocketURL = () => {
-      if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_SOCKET_URL) {
+      if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
         return window.location.origin;
       }
       return process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';
