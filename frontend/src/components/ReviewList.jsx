@@ -21,7 +21,8 @@ import {
   ThumbUpOutlined as ThumbUpOutlinedIcon,
   MoreVert as MoreVertIcon,
   CheckCircle as CheckCircleIcon,
-  Flag as FlagIcon
+  Flag as FlagIcon,
+  Star as StarIcon
 } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
 

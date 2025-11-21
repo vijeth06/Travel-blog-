@@ -81,9 +81,9 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://images.unsplash.com"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://images.unsplash.com", "https://randomuser.me"],
       scriptSrc: ["'self'"],
-      connectSrc: ["'self'", "ws://localhost:*", "wss://localhost:*"]
+      connectSrc: ["'self'", "ws://localhost:*", "wss://localhost:*", "wss://travel-blog-na4y.onrender.com"]
     }
   },
   crossOriginEmbedderPolicy: false
