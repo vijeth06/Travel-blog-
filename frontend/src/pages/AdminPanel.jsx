@@ -105,6 +105,7 @@ const AdminPanel = () => {
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [moderationDialog, setModerationDialog] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   // Check admin access
   useEffect(() => {
@@ -253,18 +254,29 @@ const AdminPanel = () => {
       const response = await getAllCommentsAdmin({ status: 'all' });
       setComments(response.data?.comments || []);
     } catch (error) {
-      setError('Failed to moderate comments');
+      console.error('Bulk moderation error:', error);
+      const errorMsg = error.response?.data?.message || error.message || 'Failed to moderate comments';
+      setError(errorMsg);
     }
   };
 
-  const handleCommentModeration = async (status, reason = '') => {
+  const handleCommentModeration = async (comment, status, reason = '') => {
     try {
-      await moderateComment(selectedItem._id, { status, reason });
-      setComments(prev => prev.filter(c => c._id !== selectedItem._id));
+      if (!comment || !comment._id) {
+        setError('No comment selected');
+        return;
+      }
+      
+      await moderateComment(comment._id, { status, reason });
+      setComments(prev => prev.filter(c => c._id !== comment._id));
       setSuccess(`Comment ${status} successfully`);
       setModerationDialog(false);
+      setSelectedItem(null);
+      setRejectionReason('');
     } catch (error) {
-      setError('Failed to moderate comment');
+      console.error('Comment moderation error:', error);
+      const errorMsg = error.response?.data?.message || error.message || 'Failed to moderate comment';
+      setError(errorMsg);
     }
   };
 
@@ -775,7 +787,7 @@ const AdminPanel = () => {
                   <Button
                     size="small"
                     color="success"
-                    onClick={() => handleCommentModeration('approved')}
+                    onClick={() => handleCommentModeration(comment, 'approved')}
                     sx={{ mr: 1 }}
                     disabled={comment.status === 'approved'}
                   >
@@ -1092,6 +1104,18 @@ const AdminPanel = () => {
         </Tabs>
       </Box>
 
+      {/* Add Provider Management Link */}
+      <Box sx={{ mb: 2 }}>
+        <Button 
+          variant="outlined" 
+          color="primary"
+          onClick={() => navigate('/admin/providers')}
+          startIcon={<People />}
+        >
+          Manage Package Providers
+        </Button>
+      </Box>
+
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
           <CircularProgress />
@@ -1222,7 +1246,11 @@ const AdminPanel = () => {
       </Dialog>
 
       {/* Comment Moderation Dialog */}
-      <Dialog open={moderationDialog} onClose={() => setModerationDialog(false)}>
+      <Dialog open={moderationDialog} onClose={() => {
+        setModerationDialog(false);
+        setSelectedItem(null);
+        setRejectionReason('');
+      }}>
         <DialogTitle>Reject Comment</DialogTitle>
         <DialogContent>
           <Typography sx={{ mb: 2 }}>
@@ -1233,11 +1261,22 @@ const AdminPanel = () => {
             multiline
             rows={3}
             placeholder="Reason for rejection..."
+            value={rejectionReason}
+            onChange={(e) => setRejectionReason(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setModerationDialog(false)}>Cancel</Button>
-          <Button onClick={() => handleCommentModeration('rejected')} color="error" variant="contained">
+          <Button onClick={() => {
+            setModerationDialog(false);
+            setSelectedItem(null);
+            setRejectionReason('');
+          }}>Cancel</Button>
+          <Button 
+            onClick={() => handleCommentModeration(selectedItem, 'rejected', rejectionReason)} 
+            color="error" 
+            variant="contained"
+            disabled={!selectedItem}
+          >
             Reject
           </Button>
         </DialogActions>

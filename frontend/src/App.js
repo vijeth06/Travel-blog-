@@ -72,6 +72,9 @@ import SocialFeed from './pages/SocialFeed';
 import SimpleDashboard from './pages/SimpleDashboard';
 import ProviderRegister from './pages/ProviderRegister';
 import ProviderDashboard from './pages/ProviderDashboard';
+import UnifiedLogin from './pages/UnifiedLogin';
+import ProviderPending from './pages/ProviderPending';
+import AdminProviderManagement from './pages/AdminProviderManagement';
 import { AuthProvider } from './contexts/EnhancedAuthContext';
 import './styles/themes.css';
 
@@ -316,9 +319,11 @@ function AppContent() {
               <Route path="/" element={<Home />} />
               <Route path="/feed" element={<ProtectedRoute><SocialFeedPage /></ProtectedRoute>} />
               <Route path="/login" element={<Login />} />
+              <Route path="/unified-login" element={<UnifiedLogin />} />
               <Route path="/register" element={<Register />} />
               <Route path="/provider/register" element={<ProviderRegister />} />
               <Route path="/provider/dashboard" element={<ProtectedRoute><ProviderDashboard /></ProtectedRoute>} />
+              <Route path="/provider/pending" element={<ProtectedRoute><ProviderPending /></ProtectedRoute>} />
               <Route path="/auth/callback" element={<GoogleAuthCallback />} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -349,6 +354,7 @@ function AppContent() {
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+              <Route path="/admin/providers" element={<ProtectedRoute><AdminProviderManagement /></ProtectedRoute>} />
               <Route path="/admin/bookings" element={<ProtectedRoute><BookingManagement /></ProtectedRoute>} />
               <Route path="/map" element={<MapPage />} />
               <Route path="/following" element={<ProtectedRoute><FollowingPage /></ProtectedRoute>} />

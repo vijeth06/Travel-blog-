@@ -49,8 +49,30 @@ export default function Login() {
     e.preventDefault();
     try {
       const result = await dispatch(loginUser(form)).unwrap();
-      // Redirect to home page instead of dashboard
-      navigate('/');
+      
+      // Role-based redirect
+      if (result.user) {
+        const role = result.user.role;
+        
+        if (role === 'admin') {
+          navigate('/admin');
+        } else if (role === 'package_provider') {
+          // Check if provider is verified
+          if (result.user.providerInfo?.verified) {
+            navigate('/provider/dashboard');
+          } else {
+            navigate('/provider/pending');
+          }
+        } else if (role === 'author') {
+          navigate('/dashboard');
+        } else {
+          // visitor or other roles
+          navigate('/dashboard');
+        }
+      } else {
+        // Fallback if no user data
+        navigate('/');
+      }
     } catch (err) {
       // Error is handled by Redux
       console.error('Login failed:', err);

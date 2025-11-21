@@ -39,23 +39,27 @@ import {
   Hotel,
   Restaurant,
   DirectionsCar,
-  Flight
+  Flight,
+  ContactMail
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import BookingForm from '../components/BookingForm';
 import SaveToTripButton from '../components/SaveToTripButton';
 import ReviewsPage from './ReviewsPage';
+import ContactProviderDialog from '../components/ContactProviderDialog';
 
 const PackageDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
   const [pkg, setPkg] = useState(null);
+  const [provider, setProvider] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchPackageDetails();
@@ -69,6 +73,15 @@ const PackageDetails = () => {
 
       if (response.ok) {
         setPkg(data);
+        
+        // Fetch provider information if package has createdBy
+        if (data.createdBy) {
+          const providerResponse = await fetch(`/api/users/${data.createdBy}`);
+          const providerData = await providerResponse.json();
+          if (providerResponse.ok && providerData.role === 'package_provider') {
+            setProvider(providerData);
+          }
+        }
       } else {
         setError(data.message || 'Package not found');
       }
@@ -482,6 +495,20 @@ const PackageDetails = () => {
               >
                 Add to Cart
               </Button>
+
+              {/* Contact Provider Button */}
+              {provider && (
+                <Button
+                  variant="outlined"
+                  size="large"
+                  fullWidth
+                  color="secondary"
+                  startIcon={<ContactMail />}
+                  onClick={() => setContactDialogOpen(true)}
+                >
+                  Contact Provider
+                </Button>
+              )}
             </Box>
 
             <Divider sx={{ my: 3 }}>
@@ -627,6 +654,16 @@ const PackageDetails = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Contact Provider Dialog */}
+      {provider && (
+        <ContactProviderDialog
+          open={contactDialogOpen}
+          onClose={() => setContactDialogOpen(false)}
+          provider={provider}
+          packageInfo={pkg}
+        />
+      )}
 
       {/* Error Alert */}
       {error && (

@@ -904,7 +904,7 @@ export default function Navbar() {
                 <Button 
                   color="inherit" 
                   component={Link} 
-                  to="/login"
+                  to="/unified-login"
                   sx={{ 
                     color: 'rgba(255,255,255,0.9)',
                     '&:hover': { color: 'white' },

@@ -12,6 +12,11 @@ logs
 .env.test.local
 .env.production.local
 
+# Credentials (DO NOT COMMIT)
+CREDENTIALS.md
+credentials.txt
+passwords.txt
+
 # Build outputs
 build/
 dist/

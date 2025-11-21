@@ -277,6 +277,35 @@ const showcaseAccount = {
   updatedAt: new Date()
 };
 
+// Demo Package Provider Account
+const packageProviderAccount = {
+  name: 'Michael Chen',
+  email: 'provider@travelapp.com',
+  password: DEMO_PASSWORD,
+  role: 'package_provider',
+  country: 'Singapore',
+  city: 'Singapore',
+  phone: '+65-6123-4567',
+  gender: 'Male',
+  dateOfBirth: new Date('1980-05-20'),
+  bio: 'Professional tour operator with 15 years of experience. Specialized in Asian adventure tours and cultural experiences.',
+  providerInfo: {
+    companyName: 'Adventure Asia Tours',
+    businessLicense: 'AAT-SG-2020-001234',
+    verified: true,
+    rating: 4.8,
+    totalPackages: 0,
+    description: 'Leading provider of authentic Asian travel experiences. We offer carefully curated tours across Southeast Asia, combining adventure, culture, and comfort.',
+    address: '123 Orchard Road, #10-01, Singapore 238858',
+    contactNumber: '+65-6123-4567',
+    website: 'https://adventureasiatours.com'
+  },
+  isVerified: true,
+  isActive: true,
+  createdAt: new Date('2024-03-01'),
+  updatedAt: new Date()
+};
+
 // Blog posts for showcase account
 const showcaseBlogPosts = [
   {
@@ -424,7 +453,7 @@ const seedDatabase = async () => {
 
     // Clear existing data
     console.log('🗑️  Clearing existing demo data...');
-    const demoEmails = [...demoUsers.map(u => u.email), showcaseAccount.email];
+    const demoEmails = [...demoUsers.map(u => u.email), showcaseAccount.email, packageProviderAccount.email];
     
     // Find existing demo users
     const existingDemoUsers = await User.find({ email: { $in: demoEmails } });
@@ -475,6 +504,14 @@ const seedDatabase = async () => {
     const showcase = await createUser(showcaseAccount);
     console.log(`   ✓ Created: ${showcase.name} (${showcase.email})`);
     console.log(`   📧 Login with: ${showcase.email} / ${DEMO_PASSWORD}`);
+
+    // Create package provider account
+    console.log('\n📦 Creating Package Provider Account...');
+    const provider = await createUser(packageProviderAccount);
+    console.log(`   ✓ Created: ${provider.name} (${provider.email})`);
+    console.log(`   📧 Login with: ${provider.email} / ${DEMO_PASSWORD}`);
+    console.log(`   🏢 Company: ${provider.providerInfo.companyName}`);
+    console.log(`   ✅ Verified: ${provider.providerInfo.verified ? 'Yes' : 'No'}`);
 
     // Create regular users
     console.log('\n👥 Creating Demo Users...');
@@ -934,7 +971,7 @@ const seedDatabase = async () => {
     console.log('✨ DATABASE SEEDING COMPLETED SUCCESSFULLY! ✨');
     console.log('='.repeat(60));
     console.log(`\n📊 Summary:`);
-    console.log(`   👤 Users: ${users.length + 1} (${authorUsers.length} authors, ${users.length - authorUsers.length} visitors, 1 admin)`);
+    console.log(`   👤 Users: ${users.length + 2} (${authorUsers.length} authors, ${users.length - authorUsers.length} visitors, 1 admin, 1 provider)`);
     console.log(`   📝 Blog Posts: ${blogs.length}`);
     console.log(`   📁 Categories: ${categories.length}`);
     console.log(`   💬 Comments: ${commentCount}`);
@@ -949,19 +986,19 @@ const seedDatabase = async () => {
     console.log(`   ⭐ Reviews: ${reviews.length}`);
     console.log(`   💬 Conversations: ${conversations.length} (${totalMessages} messages)`);
 
-    console.log(`\n🎯 Demo Showcase Account:`);
+    console.log(`\n🎯 Demo Admin Account:`);
     console.log(`   Name: ${showcase.name}`);
     console.log(`   Email: ${showcase.email}`);
     console.log(`   Password: ${DEMO_PASSWORD}`);
     console.log(`   Role: ${showcase.role}`);
-    console.log(`   Posts: ${await Blog.countDocuments({ author: showcase._id })}`);
-    console.log(`   Galleries: ${galleries.length}`);
-    console.log(`   Itineraries: ${itineraries.length}`);
-    console.log(`   Trips: ${trips.length}`);
-    console.log(`   Collections: ${collections.length}`);
-    console.log(`   Reviews: ${reviews.length}`);
-    console.log(`   Followers: ${showcase.followers.length}`);
-    console.log(`   Following: ${showcase.following.length}`);
+
+    console.log(`\n📦 Demo Package Provider Account:`);
+    console.log(`   Name: ${provider.name}`);
+    console.log(`   Email: ${provider.email}`);
+    console.log(`   Password: ${DEMO_PASSWORD}`);
+    console.log(`   Company: ${provider.providerInfo.companyName}`);
+    console.log(`   Verified: ✅ Yes`);
+    console.log(`   Role: ${provider.role}`);
 
     console.log(`\n📧 All demo accounts use password: ${DEMO_PASSWORD}`);
     console.log(`\n💡 You can now login and explore all features!`);
