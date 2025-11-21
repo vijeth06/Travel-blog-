@@ -40,6 +40,7 @@ import {
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getApiUrl } from '../../config/api';
+import { getUserBookmarks, createBookmark, removeBookmark } from '../../api/bookmarks';
 import SaveToTripButton from '../../components/SaveToTripButton';
 import ReactionPicker from '../../components/ReactionPicker';
 import ReviewsPage from '../../pages/ReviewsPage';
