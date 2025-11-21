@@ -130,21 +130,24 @@ export default function BlogDetail() {
             author: {
               ...blogData.author,
               bio: blogData.author?.bio || 'Travel enthusiast and blogger',
-              avatar: blogData.author?.avatar || ''
+              avatar: blogData.author?.avatar || '',
+              name: blogData.author?.name || 'Anonymous'
             },
+            category: typeof blogData.category === 'object' ? blogData.category?.name : blogData.category,
             images: blogData.images?.length > 0 
               ? blogData.images.map(img => typeof img === 'string' ? img : img.url)
               : blogData.featuredImage 
                 ? [blogData.featuredImage]
-                : ['https://source.unsplash.com/random/1200x600/?travel']
+                : ['https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=600&fit=crop']
           };
           
           setBlog(normalizedBlog);
           
           // Check if blog is bookmarked
           try {
-            const bookmarks = await getUserBookmarks(null, 'blog');
-            const isBookmarked = bookmarks.some(b => b.targetId?._id === id || b.targetId === id);
+            const bookmarksResponse = await getUserBookmarks(null, 'blog');
+            const bookmarksList = Array.isArray(bookmarksResponse) ? bookmarksResponse : (bookmarksResponse.bookmarks || []);
+            const isBookmarked = bookmarksList.some(b => b.targetId?._id === id || b.targetId === id);
             setBookmarked(isBookmarked);
           } catch (err) {
             console.error('Failed to check bookmark status:', err);
@@ -179,8 +182,9 @@ export default function BlogDetail() {
     try {
       if (bookmarked) {
         // Remove bookmark - need to find the bookmark ID first
-        const bookmarks = await getUserBookmarks(null, 'blog');
-        const existingBookmark = bookmarks.find(b => b.targetId?._id === id || b.targetId === id);
+        const bookmarksResponse = await getUserBookmarks(null, 'blog');
+        const bookmarksList = Array.isArray(bookmarksResponse) ? bookmarksResponse : (bookmarksResponse.bookmarks || []);
+        const existingBookmark = bookmarksList.find(b => b.targetId?._id === id || b.targetId === id);
         if (existingBookmark) {
           await removeBookmark(existingBookmark._id);
         }
