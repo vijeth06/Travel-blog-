@@ -20,7 +20,9 @@ import {
   Breadcrumbs,
   Link as MuiLink,
   Tooltip,
-  Badge
+  Badge,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { 
   LocationOn, 
@@ -101,6 +103,7 @@ export default function BlogDetail() {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [comment, setComment] = useState('');
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -166,6 +169,13 @@ export default function BlogDetail() {
   const handleLike = () => setLiked(!liked);
   
   const handleBookmark = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setSnackbar({ open: true, message: 'Please login to bookmark stories', severity: 'warning' });
+      setTimeout(() => navigate('/login'), 2000);
+      return;
+    }
+    
     try {
       if (bookmarked) {
         // Remove bookmark - need to find the bookmark ID first
@@ -175,6 +185,7 @@ export default function BlogDetail() {
           await removeBookmark(existingBookmark._id);
         }
         setBookmarked(false);
+        setSnackbar({ open: true, message: 'Story removed from bookmarks', severity: 'success' });
       } else {
         // Create bookmark
         await createBookmark({
@@ -183,9 +194,11 @@ export default function BlogDetail() {
           title: blog?.title || 'Untitled'
         });
         setBookmarked(true);
+        setSnackbar({ open: true, message: 'Story saved to bookmarks!', severity: 'success' });
       }
     } catch (error) {
       console.error('Failed to toggle bookmark:', error);
+      setSnackbar({ open: true, message: 'Failed to bookmark story. Please try again.', severity: 'error' });
     }
   };
 
@@ -522,6 +535,22 @@ export default function BlogDetail() {
           targetTitle={blog.title}
         />
       </Box>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

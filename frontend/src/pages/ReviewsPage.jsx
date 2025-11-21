@@ -42,11 +42,22 @@ const ReviewsPage = ({ targetType, targetId, targetTitle, showUserReviews = fals
   }, [tab, targetType, targetId, showUserReviews]);
 
   const loadReviews = async () => {
+    // Don't load if missing required params
+    if (!showUserReviews && (!targetType || !targetId)) {
+      setReviews([]);
+      return;
+    }
+    
     setLoading(true);
     setError('');
     try {
       let data;
       if (showUserReviews) {
+        if (!currentUser._id) {
+          setReviews([]);
+          setLoading(false);
+          return;
+        }
         data = await getUserReviews(currentUser._id);
       } else {
         const filters = {
@@ -66,6 +77,8 @@ const ReviewsPage = ({ targetType, targetId, targetTitle, showUserReviews = fals
   };
 
   const loadStats = async () => {
+    if (!targetType || !targetId) return;
+    
     try {
       const data = await getReviewStats(targetType, targetId);
       setStats(data);
