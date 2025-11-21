@@ -6,7 +6,20 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: function() { return !this.social?.google; } }, // Required only if not Google OAuth
   avatar: { type: String },
-  role: { type: String, enum: ['visitor', 'author', 'admin'], default: 'visitor' },
+  role: { type: String, enum: ['visitor', 'author', 'admin', 'package_provider'], default: 'visitor' },
+
+  // Package Provider specific fields
+  providerInfo: {
+    companyName: { type: String },
+    businessLicense: { type: String },
+    verified: { type: Boolean, default: false },
+    rating: { type: Number, default: 0 },
+    totalPackages: { type: Number, default: 0 },
+    description: { type: String },
+    address: { type: String },
+    contactNumber: { type: String },
+    website: { type: String }
+  },
 
   // Travel-specific fields
   passport: { type: String },

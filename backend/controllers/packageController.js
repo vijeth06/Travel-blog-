@@ -1,5 +1,6 @@
 const Package = require('../models/Package');
 const Category = require('../models/Category');
+const User = require('../models/User');
 
 // @desc    Get all packages
 // @route   GET /api/packages
@@ -78,7 +79,7 @@ const getPackageById = async (req, res) => {
 
 // @desc    Create new package
 // @route   POST /api/packages
-// @access  Private (Admin only)
+// @access  Private (Admin or Package Provider)
 const createPackage = async (req, res) => {
   try {
     const packageData = {
@@ -89,9 +90,16 @@ const createPackage = async (req, res) => {
     const package = new Package(packageData);
     const savedPackage = await package.save();
 
+    // Update provider's package count
+    if (req.user.role === 'package_provider') {
+      await User.findByIdAndUpdate(req.user.id, {
+        $inc: { 'providerInfo.totalPackages': 1 }
+      });
+    }
+
     const populatedPackage = await Package.findById(savedPackage._id)
       .populate('category', 'name description')
-      .populate('createdBy', 'name email');
+      .populate('createdBy', 'name email providerInfo');
 
     res.status(201).json(populatedPackage);
   } catch (error) {
@@ -101,7 +109,7 @@ const createPackage = async (req, res) => {
 
 // @desc    Update package
 // @route   PUT /api/packages/:id
-// @access  Private (Admin only)
+// @access  Private (Admin or Package Owner)
 const updatePackage = async (req, res) => {
   try {
     const package = await Package.findById(req.params.id);
@@ -126,13 +134,24 @@ const updatePackage = async (req, res) => {
 
 // @desc    Delete package
 // @route   DELETE /api/packages/:id
-// @access  Private (Admin only)
+// @access  Private (Admin or Package Owner)
 const deletePackage = async (req, res) => {
   try {
     const package = await Package.findById(req.params.id);
 
     if (!package) {
       return res.status(404).json({ message: 'Package not found' });
+    }
+
+    // Decrement provider's package count if they created it
+    if (package.createdBy && package.createdBy.toString() !== req.user.id && req.user.role === 'package_provider') {
+      await User.findByIdAndUpdate(package.createdBy, {
+        $inc: { 'providerInfo.totalPackages': -1 }
+      });
+    } else if (package.createdBy && package.createdBy.toString() === req.user.id && req.user.role === 'package_provider') {
+      await User.findByIdAndUpdate(req.user.id, {
+        $inc: { 'providerInfo.totalPackages': -1 }
+      });
     }
 
     await Package.findByIdAndDelete(req.params.id);

@@ -11,6 +11,7 @@ const {
   getFeaturedPackages
 } = require('../controllers/packageController');
 const { protect, admin } = require('../middleware/auth');
+const { packageProviderAuth, packageOwnerOrAdminAuth } = require('../middleware/packageProviderAuth');
 
 // Public routes
 router.get('/', getPackages);
@@ -21,9 +22,11 @@ router.get('/:id', getPackageById);
 // Protected routes
 router.post('/:id/reviews', protect, addPackageReview);
 
-// Admin routes
-router.post('/', protect, admin, createPackage);
-router.put('/:id', protect, admin, updatePackage);
-router.delete('/:id', protect, admin, deletePackage);
+// Package Provider & Admin routes (can create packages)
+router.post('/', protect, packageProviderAuth, createPackage);
+
+// Package Owner or Admin routes (can update/delete their own packages)
+router.put('/:id', protect, packageOwnerOrAdminAuth, updatePackage);
+router.delete('/:id', protect, packageOwnerOrAdminAuth, deletePackage);
 
 module.exports = router;

@@ -63,6 +63,7 @@ const onboardingRoutes = require('./routes/onboardingRoutes');
 const chatRoutes = require('./routes/chat');
 const galleryRoutes = require('./routes/gallery');
 const itineraryRoutes = require('./routes/itinerary');
+const providerRoutes = require('./routes/providers');
 
 const app = express();
 
@@ -151,6 +152,7 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/packages', packageRoutes);
+app.use('/api/providers', providerRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/likes', likeRoutes);
