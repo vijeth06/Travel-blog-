@@ -96,6 +96,15 @@ export default function Home() {
     { label: 'Monthly Readers', value: '45K+', icon: <Visibility />, color: '#9C27B0' }
   ];
 
+  // Show loading state
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Typography variant="h5">Loading amazing travel stories...</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ minHeight: '100vh' }}>
       {/* Hero Carousel Section */}
