@@ -57,7 +57,8 @@ import {
   ChatBubble,
   PhotoLibrary,
   EventNote,
-  RateReview
+  RateReview,
+  Business
 } from '@mui/icons-material';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
