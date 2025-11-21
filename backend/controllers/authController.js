@@ -8,10 +8,64 @@ const generateToken = (id) => {
 
 // Register with OTP verification
 exports.register = async (req, res) => {
-  const { name, email, password, phone, country, city } = req.body;
+  const { name, email, password, phone, country, city, role, providerInfo } = req.body;
   try {
+    // Check if user already exists
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ msg: 'User already exists' });
+
+    // Validate package provider registration
+    if (role === 'package_provider') {
+      if (!providerInfo || !providerInfo.companyName || !providerInfo.businessLicense) {
+        return res.status(400).json({ 
+          msg: 'Package providers must provide company name and business license' 
+        });
+      }
+
+      // Create package provider account
+      user = new User({
+        name,
+        email,
+        password,
+        phone,
+        country,
+        city,
+        role: 'package_provider',
+        providerInfo: {
+          companyName: providerInfo.companyName,
+          businessLicense: providerInfo.businessLicense,
+          description: providerInfo.description || '',
+          contactNumber: providerInfo.contactNumber || phone,
+          address: providerInfo.address || '',
+          website: providerInfo.website || '',
+          verified: false,  // Requires admin verification
+          rating: 0,
+          totalPackages: 0
+        }
+      });
+
+      await user.save();
+
+      const token = generateToken(user._id);
+      return res.json({
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          phone: user.phone,
+          country: user.country,
+          city: user.city,
+          providerInfo: user.providerInfo
+        },
+        message: 'Package provider account created successfully. Awaiting admin verification to create packages.'
+      });
+    }
+
+    // Regular user registration (visitor/author)
+    const allowedRoles = ['visitor', 'author'];
+    const userRole = role && allowedRoles.includes(role) ? role : 'visitor';
 
     user = new User({
       name,
@@ -19,7 +73,8 @@ exports.register = async (req, res) => {
       password,
       phone,
       country,
-      city
+      city,
+      role: userRole
     });
     await user.save();
 
@@ -34,7 +89,8 @@ exports.register = async (req, res) => {
         phone: user.phone,
         country: user.country,
         city: user.city
-      }
+      },
+      message: `Account created successfully as ${userRole}`
     });
   } catch (err) {
     console.error(err);
@@ -58,19 +114,38 @@ exports.login = async (req, res) => {
     await user.save();
 
     const token = generateToken(user._id);
+    
+    // Base user info
+    const userInfo = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      phone: user.phone,
+      country: user.country,
+      city: user.city,
+      avatar: user.avatar,
+      isVerified: user.isVerified
+    };
+
+    // Add provider info if package provider
+    if (user.role === 'package_provider') {
+      userInfo.providerInfo = user.providerInfo;
+      
+      // Check verification status
+      if (!user.providerInfo?.verified) {
+        return res.json({
+          token,
+          user: userInfo,
+          warning: 'Your package provider account is pending admin verification. You cannot create packages yet.'
+        });
+      }
+    }
+
     res.json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        country: user.country,
-        city: user.city,
-        avatar: user.avatar,
-        isVerified: user.isVerified
-      }
+      user: userInfo,
+      message: `Welcome back, ${user.name}!`
     });
   } catch (err) {
     console.error(err);
