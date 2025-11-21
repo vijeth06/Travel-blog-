@@ -807,9 +807,24 @@ exports.googleCallback = async (req, res, next) => {
   const { generateAccessToken, generateRefreshToken, hashToken, getDeviceInfo } = require('../utils/authHelpers');
   const RefreshToken = require('../models/RefreshToken');
   
+  // Determine frontend URL dynamically
+  const getFrontendUrl = () => {
+    if (process.env.FRONTEND_URL) {
+      return process.env.FRONTEND_URL;
+    }
+    // Check if request is from Render production
+    const host = req.get('host');
+    if (host && host.includes('onrender.com')) {
+      return `https://${host}`;
+    }
+    return 'http://localhost:3000';
+  };
+  
+  const frontendUrl = getFrontendUrl();
+  
   passport.authenticate('google', { session: false }, async (err, user, info) => {
     if (err || !user) {
-      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`);
+      return res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
     }
 
     try {
@@ -833,11 +848,11 @@ exports.googleCallback = async (req, res, next) => {
       }).save();
 
       // Redirect to frontend with tokens
-      const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&userId=${user._id}`;
+      const redirectUrl = `${frontendUrl}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&userId=${user._id}`;
       res.redirect(redirectUrl);
     } catch (error) {
       console.error('Google OAuth callback error:', error);
-      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=auth_failed`);
+      res.redirect(`${frontendUrl}/login?error=auth_failed`);
     }
   })(req, res, next);
 };

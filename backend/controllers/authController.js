@@ -181,21 +181,33 @@ exports.googleAuth = (req, res, next) => {
 };
 
 exports.googleCallback = (req, res, next) => {
+  // Determine frontend URL dynamically
+  const getFrontendUrl = () => {
+    if (process.env.FRONTEND_URL) {
+      return process.env.FRONTEND_URL;
+    }
+    // Check if request is from Render production
+    const host = req.get('host');
+    if (host && host.includes('onrender.com')) {
+      return `https://${host}`;
+    }
+    return 'http://localhost:3000';
+  };
+  
+  const frontendURL = getFrontendUrl();
+  
   passport.authenticate('google', { session: false }, async (err, user) => {
     try {
       if (err || !user) {
-        const frontendURL = process.env.FRONTEND_URL || 'http://localhost:3000';
         return res.redirect(`${frontendURL}/auth/error`);
       }
 
       const token = generateToken(user._id);
 
       // Redirect to frontend with token
-      const frontendURL = process.env.FRONTEND_URL || 'http://localhost:3000';
       res.redirect(`${frontendURL}/auth/success?token=${token}`);
     } catch (error) {
       console.error('Google callback error:', error);
-      const frontendURL = process.env.FRONTEND_URL || 'http://localhost:3000';
       res.redirect(`${frontendURL}/auth/error`);
     }
   })(req, res, next);
