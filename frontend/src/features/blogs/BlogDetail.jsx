@@ -43,6 +43,8 @@ import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getApiUrl } from '../../config/api';
 import { getUserBookmarks, createBookmark, removeBookmark } from '../../api/bookmarks';
+import { toggleLike, getLikeStatus } from '../../api/likes';
+import { createComment, getCommentsByBlog } from '../../api/comments';
 import SaveToTripButton from '../../components/SaveToTripButton';
 import ReactionPicker from '../../components/ReactionPicker';
 import ReviewsPage from '../../pages/ReviewsPage';
@@ -152,6 +154,14 @@ export default function BlogDetail() {
           } catch (err) {
             console.error('Failed to check bookmark status:', err);
           }
+
+          // Check if blog is liked
+          try {
+            const likeStatus = await getLikeStatus('blog', id);
+            setLiked(likeStatus.isLiked || false);
+          } catch (err) {
+            console.error('Failed to check like status:', err);
+          }
         } else {
           console.error('Failed to fetch blog');
           navigate('/blogs');
@@ -169,7 +179,28 @@ export default function BlogDetail() {
     }
   }, [id, navigate]);
 
-  const handleLike = () => setLiked(!liked);
+  const handleLike = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setSnackbar({ open: true, message: 'Please login to like stories', severity: 'warning' });
+      setTimeout(() => navigate('/login'), 2000);
+      return;
+    }
+    
+    try {
+      await toggleLike('blog', id);
+      setLiked(!liked);
+      // Update blog likes count
+      setBlog(prev => ({
+        ...prev,
+        likesCount: liked ? (prev.likesCount - 1) : (prev.likesCount + 1)
+      }));
+      setSnackbar({ open: true, message: liked ? 'Like removed' : 'Story liked!', severity: 'success' });
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+      setSnackbar({ open: true, message: 'Failed to like story', severity: 'error' });
+    }
+  };
   
   const handleBookmark = async () => {
     const token = localStorage.getItem('token');
@@ -203,6 +234,66 @@ export default function BlogDetail() {
     } catch (error) {
       console.error('Failed to toggle bookmark:', error);
       setSnackbar({ open: true, message: 'Failed to bookmark story. Please try again.', severity: 'error' });
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setSnackbar({ open: true, message: 'Please login to comment', severity: 'warning' });
+      setTimeout(() => navigate('/login'), 2000);
+      return;
+    }
+
+    if (!comment.trim()) {
+      setSnackbar({ open: true, message: 'Please enter a comment', severity: 'warning' });
+      return;
+    }
+
+    try {
+      const response = await createComment({
+        blog: id,
+        content: comment
+      });
+      
+      setSnackbar({ open: true, message: 'Comment posted successfully!', severity: 'success' });
+      setComment('');
+      
+      // Reload comments
+      const commentsResponse = await getCommentsByBlog(id);
+      setBlog(prev => ({
+        ...prev,
+        comments: commentsResponse.data.comments || [],
+        commentsCount: (commentsResponse.data.comments || []).length
+      }));
+    } catch (error) {
+      console.error('Failed to post comment:', error);
+      setSnackbar({ open: true, message: 'Failed to post comment', severity: 'error' });
+    }
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const shareData = {
+      title: blog.title,
+      text: `Check out this travel story: ${blog.title}`,
+      url: url
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        setSnackbar({ open: true, message: 'Shared successfully!', severity: 'success' });
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(url);
+        setSnackbar({ open: true, message: 'Link copied to clipboard!', severity: 'success' });
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('Share failed:', error);
+        setSnackbar({ open: true, message: 'Failed to share', severity: 'error' });
+      }
     }
   };
 
@@ -373,6 +464,7 @@ export default function BlogDetail() {
         <Button
           variant="outlined"
           startIcon={<Share />}
+          onClick={handleShare}
           sx={{ borderColor: '#4caf50', color: '#4caf50' }}
         >
           Share
@@ -431,7 +523,7 @@ export default function BlogDetail() {
                 onChange={(e) => setComment(e.target.value)}
                 sx={{ mb: 2 }}
               />
-              <Button variant="contained" sx={{ 
+              <Button variant="contained" onClick={handleCommentSubmit} sx={{ 
                 background: 'linear-gradient(45deg, #FF6B35 30%, #F7931E 90%)',
                 boxShadow: '0 3px 15px 2px rgba(255, 107, 53, 0.3)',
                 '&:hover': {

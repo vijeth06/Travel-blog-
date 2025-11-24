@@ -48,6 +48,7 @@ import {
   Link as LinkIcon,
   Refresh,
   Warning,
+  AccessTime,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -58,6 +59,7 @@ const IntegrationsPage = () => {
   const [selectedIntegration, setSelectedIntegration] = useState(null);
   const [configDialog, setConfigDialog] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sessionTime, setSessionTime] = useState(0);
   const { user, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -66,11 +68,59 @@ const IntegrationsPage = () => {
     }
   }, [token]);
 
+  // Session time tracker
+  useEffect(() => {
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      setSessionTime(elapsed);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${secs}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    } else {
+      return `${secs}s`;
+    }
+  };
+
   const fetchIntegrations = async () => {
     setLoading(true);
     try {
       const response = await getUserIntegrations();
-      setIntegrations(response.integrations || []);
+      const integrationsData = response.integrations || [];
+      setIntegrations(integrationsData);
+      
+      // Calculate real-time integration stats
+      const connected = integrationsData.filter(i => i.connected).length;
+      const active = integrationsData.filter(i => i.enabled).length;
+      const totalSyncs = integrationsData.reduce((sum, i) => sum + (i.syncCount || 0), 0);
+      const lastSyncTimes = integrationsData
+        .filter(i => i.lastSync)
+        .map(i => new Date(i.lastSync).getTime());
+      
+      const mostRecentSync = lastSyncTimes.length > 0 
+        ? new Date(Math.max(...lastSyncTimes))
+        : null;
+
+      // Store integration analytics
+      window.integrationStats = {
+        connected,
+        active,
+        total: integrationsData.length,
+        totalSyncs,
+        mostRecentSync,
+        dataTransferred: integrationsData.reduce((sum, i) => sum + (i.dataTransferred || 0), 0)
+      };
     } catch (error) {
       console.error('Error fetching integrations:', error);
       // Set empty array instead of demo data
@@ -282,7 +332,7 @@ const IntegrationsPage = () => {
 
       {/* Overview Stats */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <Paper sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="h3" color="success.main">
               {integrations.filter(i => i.connected).length}
@@ -290,7 +340,7 @@ const IntegrationsPage = () => {
             <Typography variant="body1">Connected</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <Paper sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="h3" color="primary">
               {integrations.filter(i => i.enabled).length}
@@ -298,7 +348,7 @@ const IntegrationsPage = () => {
             <Typography variant="body1">Active</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <Paper sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="h3" color="secondary">
               {integrations.length}
@@ -306,7 +356,63 @@ const IntegrationsPage = () => {
             <Typography variant="body1">Available</Typography>
           </Paper>
         </Grid>
+        <Grid item xs={12} sm={3}>
+          <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'primary.light', color: 'white' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
+              <AccessTime />
+              <Typography variant="h5" fontWeight="bold">
+                {formatTime(sessionTime)}
+              </Typography>
+            </Box>
+            <Typography variant="body2">Session Time</Typography>
+          </Paper>
+        </Grid>
       </Grid>
+
+      {/* Real-Time Integration Usage Analytics */}
+      {integrations.length > 0 && window.integrationStats && (
+        <Paper elevation={3} sx={{ p: 3, mb: 4, bgcolor: 'success.light', color: 'white' }}>
+          <Typography variant="h6" gutterBottom fontWeight="bold">
+            🔄 Integration Usage Analytics
+          </Typography>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={4}>
+              <Box>
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  Total Syncs Completed
+                </Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {window.integrationStats.totalSyncs || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box>
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  Data Transferred
+                </Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {window.integrationStats.dataTransferred 
+                    ? `${(window.integrationStats.dataTransferred / 1024 / 1024).toFixed(2)} MB`
+                    : '0 MB'}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box>
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  Last Sync
+                </Typography>
+                <Typography variant="h6" fontWeight="bold">
+                  {window.integrationStats.mostRecentSync 
+                    ? window.integrationStats.mostRecentSync.toLocaleString()
+                    : 'No syncs yet'}
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+      )}
 
       {/* Integration Categories */}
       {Object.entries(groupedIntegrations).map(([category, categoryIntegrations]) => (

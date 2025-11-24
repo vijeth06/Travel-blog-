@@ -35,6 +35,7 @@ import {
   Favorite,
   Comment,
   Close,
+  AccessTime,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -44,13 +45,60 @@ const GamificationPage = () => {
   const [achievements, setAchievements] = useState([]);
   const [selectedAchievement, setSelectedAchievement] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sessionTime, setSessionTime] = useState(0);
+  const [userStats, setUserStats] = useState(null);
+  const [activityData, setActivityData] = useState(null);
   const { user, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (token) {
       fetchGamificationData();
+      fetchUserAnalytics();
     }
   }, [token]);
+
+  // Session time tracker
+  useEffect(() => {
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      setSessionTime(elapsed);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${secs}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    } else {
+      return `${secs}s`;
+    }
+  };
+
+  const fetchUserAnalytics = async () => {
+    try {
+      const [statsRes, activityRes] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_API_URL}/gamification/stats`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get(`${process.env.REACT_APP_API_URL}/gamification/activity`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }).catch(() => ({ data: null })) // Optional endpoint
+      ]);
+
+      setUserStats(statsRes.data);
+      setActivityData(activityRes.data);
+    } catch (error) {
+      console.error('Error fetching user analytics:', error);
+    }
+  };
 
   const fetchGamificationData = async () => {
     try {
@@ -195,6 +243,94 @@ const GamificationPage = () => {
                   </Paper>
                 </Grid>
               </Grid>
+              
+              {/* Real-time Session Tracking */}
+              <Box sx={{ mt: 3, p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'primary.main' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AccessTime color="primary" />
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Current Session
+                    </Typography>
+                  </Box>
+                  <Typography variant="h6" color="primary.main" fontWeight="bold">
+                    {formatTime(sessionTime)}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                  Active time since page load
+                </Typography>
+              </Box>
+
+              {/* Real User Analytics Data */}
+              {userStats && (
+                <Box sx={{ mt: 3, p: 2, bgcolor: 'success.light', borderRadius: 2, color: 'white' }}>
+                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                    📊 Your Platform Analytics
+                  </Typography>
+                  <Grid container spacing={2} sx={{ mt: 1 }}>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                        Total Time on Platform
+                      </Typography>
+                      <Typography variant="h6" fontWeight="bold">
+                        {userStats.totalTimeSpent ? formatTime(userStats.totalTimeSpent) : '0h 0m'}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                        Current Streak
+                      </Typography>
+                      <Typography variant="h6" fontWeight="bold">
+                        {userStats.loginStreak || 0} days 🔥
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                        Activities Completed
+                      </Typography>
+                      <Typography variant="h6" fontWeight="bold">
+                        {userStats.activitiesCompleted || 0}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                        Last Active
+                      </Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        {userStats.lastActive ? new Date(userStats.lastActive).toLocaleDateString() : 'Today'}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Box>
+              )}
+
+              {/* Activity Heatmap/Timeline */}
+              {activityData && activityData.recentActivities && (
+                <Box sx={{ mt: 3, p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+                  <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                    Recent Activity
+                  </Typography>
+                  <List dense>
+                    {activityData.recentActivities.slice(0, 5).map((activity, index) => (
+                      <ListItem key={index} sx={{ py: 0.5 }}>
+                        <ListItemText
+                          primary={activity.type || activity.action}
+                          secondary={activity.createdAt ? new Date(activity.createdAt).toLocaleString() : 'Recently'}
+                          primaryTypographyProps={{ variant: 'caption' }}
+                          secondaryTypographyProps={{ variant: 'caption', fontSize: '0.7rem' }}
+                        />
+                        <Chip 
+                          label={`+${activity.points || 0} pts`} 
+                          size="small" 
+                          color="primary" 
+                          sx={{ height: 20, fontSize: '0.7rem' }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Grid>
